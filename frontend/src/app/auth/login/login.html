@@ -1,8 +1,26 @@
-<form [formGroup]="form">
+<!-- login.html -->
+
+<form [formGroup]="form" (ngSubmit)="iniciarSesion()">
     <div id="main">
-        <h2 id="header">Sistema de gestión de proyectos</h2>
-        <input pInputText id="nombre" type="text" placeholder="Nombre de usuario" formControlName="nombre" />
-        <p-password id="clave" formControlName="clave" [feedback]="false" autocomplete="off" placeholder="Clave de acceso" [fluid]="true"/>
-        <p-button label="Iniciar sesión" severity="success" (click)="iniciarSesion()" [fluid]="true"/>
+        <h2 id="header">Sistema de Gestión de Proyectos</h2>
+
+        <div class="field">
+            <input pInputText id="nombre" type="text" placeholder="Nombre de usuario" formControlName="nombre" />
+
+            @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+            <small class="error-msg">El nombre de usuario es requerido</small>
+            }
+        </div>
+
+        <div class="field">
+            <p-password id="clave" formControlName="clave" [feedback]="false" autocomplete="off"
+                placeholder="Clave de acceso" [fluid]="true" />
+
+            @if (form.get('clave')?.invalid && form.get('clave')?.touched) {
+                <small class="error-msg">La clave de acceso es requerida</small>
+            }
+        </div>
+
+        <p-button label="Iniciar sesión" severity="success" type="submit" [fluid]="true" />
     </div>
 </form>

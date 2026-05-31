@@ -1,3 +1,4 @@
+// Login.ts
 import { Component, inject } from "@angular/core";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
@@ -31,22 +32,23 @@ export class Login {
 
     iniciarSesion() {
 
-        if (!this.form.valid){
-            this.messageService.add({severity: "error", summary: "Los campos del formulario son requeridos"});
+        if (!this.form.valid) {
+            Object.keys(this.form.controls).forEach(key => {
+                this.form.get(key)?.markAsTouched();
+            });
             return;
         }
-
         const nombre: string = this.form.value.nombre
 
         const clave: string = this.form.value.clave
 
         this.loginApiClient.iniciarSesion(nombre, clave).subscribe({
-            next: (data)=>{
+            next: (data) => {
                 this.authStore.guardarToken(data.accessToken);
                 this.router.navigateByUrl("/proyectos");
             },
-            error: (err)=>{
-                this.messageService.add({severity: "error", summary: "Ha ocurrido un error al iniciar sesión"})
+            error: (err) => {
+                this.messageService.add({ severity: "error", summary: "Ha ocurrido un error al iniciar sesión" })
             }
         });
 

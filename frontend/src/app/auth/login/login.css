@@ -1,3 +1,4 @@
+/* login.css */
 :host {
     display: flex;
     flex-direction: column;
@@ -44,4 +45,15 @@ form {
     font-weight: 700;
     color: #111827;
     margin-bottom: 0.5rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.error-msg {
+    color: var(--p-red-500);
+    font-size: 0.8rem;
 }
