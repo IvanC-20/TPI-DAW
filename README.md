@@ -64,6 +64,6 @@ El frontend queda disponible en `http://localhost:4200`.
 ## Funcionalidades adicionales
 
 - **Búsqueda avanzada:** filtrado de proyectos por nombre y estado
-- **Exportación CSV:** descarga del listado de proyectos en formato CSV
+- **Exportaciones en varios formatos:** descarga del listado de proyectos en formato CSV - JSON - Excel - PDF
 - **Estadísticas:** dashboard con métricas de proyectos, tareas y clientes
 - **Fecha de finalización:** definición de una fecha objetivo para cada proyecto
