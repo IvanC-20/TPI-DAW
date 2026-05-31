@@ -1,11 +1,12 @@
 services:
-
   db:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db_data:/var/lib/postgresql/data
@@ -14,21 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  backend:
-      build: ./backend
-      env_file:
-        - .env
-      depends_on:
-        db:
-          condition: service_healthy
-  
-    frontend:
-      build: ./frontend
-      ports:
-        - "8080:80"
-      depends_on:
-        - backend
 
 volumes:
   db_data:
