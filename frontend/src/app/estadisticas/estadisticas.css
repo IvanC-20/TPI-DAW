@@ -1,0 +1,68 @@
+#grilla-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+#grilla-graficos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+#grilla-graficos p-chart {
+    display: flex;
+    justify-content: center;
+}
+
+#grilla-graficos ::ng-deep canvas {
+    margin: 0 auto;
+}
+
+.metricas {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+}
+
+.metrica {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.valor {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.etiqueta {
+    font-size: 0.8rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.total {
+    color: #ffffff;
+}
+
+.activo {
+    color: #16a34a;
+}
+
+.finalizado {
+    color: #2563eb;
+}
+
+.pendiente {
+    color: #d97706;
+}
+
+.baja {
+    color: #dc2626;
+}

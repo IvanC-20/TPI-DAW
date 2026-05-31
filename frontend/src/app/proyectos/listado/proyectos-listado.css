@@ -1,0 +1,37 @@
+#tabla {
+    margin-top: 1rem;
+}
+
+#acciones-superiores {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#filtros {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.retrasado {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.vence-hoy {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.en-tiempo {
+    color: #16a34a;
+}
+
+.acciones {
+    display: flex;
+    gap: 0.35rem;
+}
+

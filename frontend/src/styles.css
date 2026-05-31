@@ -1,0 +1,78 @@
+@import "primeicons/primeicons.css";
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+:root {
+    --color-primary: #2563eb;
+    --color-success: #16a34a;
+    --color-danger: #dc2626;
+    --color-warning: #f59e0b;
+    --color-text: #111827;
+    --color-bg: #ffffff;
+    --color-border: #e5e7eb;
+    --color-muted: #6b7280;
+}
+
+* {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+.p-dialog {
+    margin: 1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.badge-activo {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.badge-finalizado,
+.badge-finalizada {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.badge-baja {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.badge-pendiente {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+/* Encabezados de tabla */
+.p-datatable .p-datatable-thead > tr > th {
+    background-color: #f1f5f9 !important;
+    color: #374151 !important;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* Toast — texto legible */
+.p-toast .p-toast-message .p-toast-message-text .p-toast-summary {
+    color: #111827 !important;
+    font-weight: 700 !important;
+}
+
+.p-toast .p-toast-message .p-toast-message-text .p-toast-detail {
+    color: #374151 !important;
+}

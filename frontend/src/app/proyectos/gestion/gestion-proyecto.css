@@ -1,0 +1,30 @@
+#contenedor-formulario{
+    display: flex;
+    flex-direction: column;
+}
+
+#nombre{
+    margin-bottom: 1rem;
+}
+
+#cliente{
+    margin-bottom: 1rem;
+}
+
+#estado{
+    margin-bottom: 1rem;
+}
+
+#boton-gestionar-clientes{
+    margin-bottom: 1rem;
+
+}
+
+#boton-gestionar-clientes {
+    width: 100%;
+}
+
+#guardar {
+    align-self: center;
+    margin-top: 1rem;
+}

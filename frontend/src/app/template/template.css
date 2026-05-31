@@ -1,0 +1,68 @@
+#header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 10vh;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 100;
+}
+
+#nombre-de-proyecto {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+#nav {
+    display: flex;
+    gap: 0.25rem;
+}
+
+#nav a {
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+#nav a:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+#nav a.activo {
+    background-color: #eff6ff;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+#content {
+    position: fixed;
+    margin-top: 10vh;
+    width: 100%;
+    height: 90vh;
+    padding: 1.5rem;
+    overflow: auto;
+    background-color: #ffffff;
+}
+
+::ng-deep .p-button {
+    font-size: 0.8rem !important;
+}
+
+@media (min-width: 768px) {
+    #nombre-de-proyecto {
+        font-size: 1.2rem;
+    }
+
+    ::ng-deep .p-button {
+        font-size: 1rem !important;
+    }
+}

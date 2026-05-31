@@ -1,0 +1,48 @@
+<app-template>
+    <div id="acciones-superiores">
+        <p-button icon="pi pi-plus" label="Crear Proyecto" severity="success" (click)="crearProyecto()"></p-button>
+        <p-button icon="pi pi-file-export" label="Exportar" severity="secondary" (click)="menuExportar.toggle($event)"></p-button>
+        <p-menu #menuExportar [model]="opcionesExportar" [popup]="true" appendTo="body" />
+        <!-- <p-button icon="pi pi-file-export" label="Exportar CSV" severity="secondary" (click)="exportar('csv','proyectos.csv')"></p-button>
+        <p-button icon="pi pi-file-export" label="Exportar JSON" severity="secondary" (click)="exportar('json','proyectos.json')"></p-button>
+        <p-button icon="pi pi-file-export" label="Exportar Excel" severity="secondary" (click)="exportar('excel','proyectos.xlsx')"></p-button>
+        <p-button icon="pi pi-file-export" label="Exportar PDF" severity="secondary" (click)="exportar('pdf','proyectos.pdf')"></p-button> -->
+        
+    </div>
+    <div id="filtros">
+        <input pInputText type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtroPorNombre" (keyup.enter)="buscar()" />
+        <p-select [options]="opciones" optionLabel="label" optionValue="value" [(ngModel)]="filtroPorEstado" placeholder="Filtrar por estado" appendTo="body"></p-select>
+        <p-button icon="pi pi-search" label="Buscar" (click)="buscar()"></p-button>
+        <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
+    </div>
+    <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh">
+        <ng-template #header>
+            <tr>
+                <th>Nombre</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Fecha de Finalización</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-proyecto>
+            <tr>
+                <td>{{ proyecto.nombre }}</td>
+                <td>{{ proyecto.cliente ? proyecto.cliente.nombre : '' }}</td>
+                <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span></td>
+                <td [class]="estadoFecha(proyecto).clase">{{ estadoFecha(proyecto).texto }}</td>
+                <td class="acciones">
+                    <p-button id="boton-gestionar-tareas" icon="pi pi-list" pTooltip="Gestionar Tareas" (click)="gestionarTareas(proyecto)"></p-button>
+                    <p-button icon="pi pi-pencil" pTooltip="Editar Proyecto" severity="warn" (click)="editarProyecto(proyecto)"></p-button>
+                    <p-button icon="pi pi-copy" pTooltip="Copiar datos" severity="secondary" (click)="copiarAlPortapapeles(proyecto)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5">No se encontraron proyectos.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</app-template>
+<app-gestion-proyecto [(visible)]="dialogVisible" [(proyectoSeleccionado)]="proyectoSeleccionado"></app-gestion-proyecto>

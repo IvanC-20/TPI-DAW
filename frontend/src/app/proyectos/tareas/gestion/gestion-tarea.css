@@ -1,0 +1,18 @@
+#contenedor-formulario{
+    display: flex;
+    flex-direction: column;
+}
+
+#descripcion{
+    margin-bottom: 1rem;
+}
+
+#estado {
+    margin-bottom: 1rem;
+}
+
+#contenedor-guardar {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}

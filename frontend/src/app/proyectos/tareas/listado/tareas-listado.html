@@ -1,0 +1,63 @@
+<app-template>
+    <p-button id="boton-volver" icon="pi pi-arrow-left" label="Volver a Proyectos" (click)="router.navigateByUrl('/proyectos')"></p-button>
+    <section id="datos-basicos">
+        <div class="resumen">
+            <span style="font-weight: bold;">Proyecto: </span> {{ proyecto()?.nombre }}
+        </div>
+        @if (proyecto()?.cliente ){
+        <div class="resumen">
+            <span style="font-weight: bold;">Cliente: </span> {{ proyecto()?.cliente }}
+
+        </div>
+        }
+        <div class="resumen">
+            <span style="font-weight: bold;">Estado: </span> {{ proyecto()?.estado }}
+        </div>
+        @if (proyecto()?.fechaFinalizacion) {
+        <div class="resumen">
+            <span style="font-weight: bold;">Fecha de finalización: </span> {{ proyecto()?.fechaFinalizacion }}
+        </div>
+        }
+        <div class="resumen">
+            <span style="font-weight: bold;">Pendientes: </span>
+            <span class="badge badge-pendiente">{{ tareasPendientes() }}</span>
+        </div>
+        <div class="resumen">
+            <span style="font-weight: bold;">Finalizadas: </span>
+            <span class="badge badge-finalizada">{{ tareasFinalizadas() }}</span>
+        </div>
+        <div class="resumen">
+            <span style="font-weight: bold;">Baja: </span>
+            <span class="badge badge-baja">{{ tareasBaja() }}</span>
+        </div>
+    </section>
+    <p-button id="boton-crear-tarea" icon="pi pi-plus" label="Crear Tarea" severity="success" (click)="crearTarea()"></p-button>
+    <p-table id="tabla" [value]="tareas()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true"
+        scrollHeight="50vh">
+        <ng-template #header>
+            <tr>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-tarea>
+            <tr>
+                <td>{{ tarea.descripcion }}</td>
+                <td><span [class]="'badge badge-' + tarea.estado.toLowerCase()">{{ tarea.estado }}</span></td>
+                <td class="acciones">
+                    <p-button icon="pi pi-pencil" pTooltip="Editar Tarea" severity="warn" (click)="editarTarea(tarea)"></p-button>
+                    <p-button icon="pi pi-trash" pTooltip="Eliminar Tarea" severity="danger" (click)="eliminarTarea(tarea)"></p-button>
+                    <p-button icon="pi pi-copy" pTooltip="Copiar datos" severity="secondary" (click)="copiarAlPortapapeles(tarea)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="4">No se encontraron tareas.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</app-template>
+<app-gestion-tarea [(visible)]="dialogVisible" [idProyecto]="idProyecto()"
+    [(tareaSeleccionada)]="tareaSeleccionada"></app-gestion-tarea>

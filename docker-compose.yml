@@ -1,0 +1,42 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: daw
+      POSTGRES_PASSWORD: "2026"
+      POSTGRES_DB: gestor_de_proyectos
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daw -d gestor_de_proyectos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: daw
+      DB_PASSWORD: "2026"
+      DB_NAME: gestor_de_proyectos
+      DB_LOGGING: "false"
+      SWAGGER_HABILITADO: "true"
+      JWT_SECRET: "gtT0zY6&5Sx%7c29x&O4@^@73D&uz^xQ"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
