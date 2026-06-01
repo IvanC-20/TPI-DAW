@@ -14,26 +14,44 @@ import { InputTextModule } from "primeng/inputtext";
 import { Router } from "@angular/router";
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
+import { FuzzySearch } from "../../shared/fuzzy-search/fuzzy-search";
+import { CheckboxModule } from "primeng/checkbox";
+import { ExportacionService } from "../../shared/exportacion/exportacion.service";
 
 
 @Component({
   selector: "app-proyectos-listado",
   templateUrl: "./proyectos-listado.html",
   styleUrls: ["./proyectos-listado.css"],
-  imports: [TableModule, ButtonModule, Template, TooltipModule, 
-    GestionProyecto, FormsModule, SelectModule, InputTextModule, MenuModule]
+  imports: [
+    TableModule,
+    ButtonModule,
+    Template,
+    TooltipModule,
+    GestionProyecto,
+    FormsModule,
+    SelectModule,
+    InputTextModule,
+    MenuModule,
+    FuzzySearch,
+    CheckboxModule
+  ]
 })
+
 export class ProyectosListado implements OnInit {
 
   private readonly messageService: MessageService = inject(MessageService);
   private readonly proyectosListadoApiClient: ProyectosListadoApiClient = inject(ProyectosListadoApiClient);
   private readonly router: Router = inject(Router);
+  protected todosLosProyectos: ListProyectoDTO[] = [];
+  protected proyectosFiltradosPorEstado: ListProyectoDTO[] = [];
+  private readonly exportacionService: ExportacionService = inject(ExportacionService);
 
   proyectos: WritableSignal<ListProyectoDTO[]> = signal([]);
   dialogVisible: WritableSignal<boolean> = signal(false);
   proyectoSeleccionado: WritableSignal<ListProyectoDTO | null> = signal<ListProyectoDTO | null>(null);
 
-  filtroPorNombre: WritableSignal<string> = signal('');
+
   filtroPorEstado: WritableSignal<string | null> = signal(null);
 
   readonly opciones: { label: string; value: string | null }[] = [
@@ -54,11 +72,10 @@ export class ProyectosListado implements OnInit {
   }
 
   refrescarProyectos(): void {
-    this.proyectosListadoApiClient.buscarProyectos(
-      this.filtroPorNombre() || undefined,
-      this.filtroPorEstado() || undefined
-    ).subscribe({
+    this.proyectosListadoApiClient.buscarProyectos().subscribe({
       next: (data) => {
+        this.todosLosProyectos = data;
+        this.proyectosFiltradosPorEstado = data;
         this.proyectos.set(data);
       },
       error: () => {
@@ -67,14 +84,10 @@ export class ProyectosListado implements OnInit {
     });
   }
 
-  buscar(): void {
-    this.refrescarProyectos();
-  }
+  seleccionarTodos: boolean = false;
 
-  limpiarFiltros(): void {
-    this.filtroPorNombre.set('');
-    this.filtroPorEstado.set(null);
-    this.refrescarProyectos();
+  toggleSeleccionarTodos(): void {
+    this.proyectos().forEach(p => p.seleccionado = this.seleccionarTodos);
   }
 
   crearProyecto(): void {
@@ -107,7 +120,7 @@ export class ProyectosListado implements OnInit {
     if (dias === 0) {
       return { texto: 'Vence hoy', clase: 'vence-hoy' };
     }
-    return { texto: `${dias} días restantes`, clase: 'en-tiempo' };
+    return { texto: `${dias} días`, clase: 'en-tiempo' };
   }
 
   copiarAlPortapapeles(proyecto: ListProyectoDTO): void {
@@ -126,40 +139,39 @@ export class ProyectosListado implements OnInit {
 
   // Exportando datos
   opcionesExportar: MenuItem[] = [
-    { label: 'CSV', icon: 'pi pi-file', command: () => this.exportar('csv', 'proyectos.csv') },
-    { label: 'JSON', icon: 'pi pi-code', command: () => this.exportar('json', 'proyectos.json') },
-    { label: 'Excel', icon: 'pi pi-file-excel', command: () => this.exportar('excel', 'proyectos.xlsx') },
-    { label: 'PDF', icon: 'pi pi-file-pdf', command: () => this.exportar('pdf', 'proyectos.pdf') },
-  ];
-  exportar(formato: 'csv' | 'json' | 'excel' | 'pdf', nombreArchivo: string): void {
-    const nombre = this.filtroPorNombre() || undefined;
-    const estado = this.filtroPorEstado() || undefined;
+    { label: 'CSV', icon: 'pi pi-file', command: () => this.exportar('csv') },
+    { label: 'JSON', icon: 'pi pi-code', command: () => this.exportar('json') },
+    { label: 'Excel', icon: 'pi pi-file-excel', command: () => this.exportar('excel') },
+    { label: 'PDF', icon: 'pi pi-file-pdf', command: () => this.exportar('pdf') },
+];
 
-    const request$ = {
-      csv: this.proyectosListadoApiClient.exportarCSV(nombre, estado),
-      json: this.proyectosListadoApiClient.exportarJSON(nombre, estado),
-      excel: this.proyectosListadoApiClient.exportarExcel(nombre, estado),
-      pdf: this.proyectosListadoApiClient.exportarPDF(nombre, estado)
-    }[formato];
+exportar(formato: 'csv' | 'json' | 'excel' | 'pdf'): void {
+    const datos = this.proyectos().map(p => ({
+        nombre: p.nombre,
+        cliente: p.cliente?.nombre ?? '-',
+        estado: p.estado,
+        fechaFinalizacion: p.fechaFinalizacion ?? '-'
+    }));
 
-    request$.subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = nombreArchivo;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: `Error al exportar los proyectos`
-        });
-      }
-    });
+    switch (formato) {
+        case 'csv':
+            this.exportacionService.exportarCSV(datos, 'proyectos.csv');
+            break;
+        case 'json':
+            this.exportacionService.exportarJSON(datos, 'proyectos.json');
+            break;
+        case 'excel':
+            this.exportacionService.exportarExcel(datos, 'proyectos.xlsx');
+            break;
+        case 'pdf':
+            this.exportacionService.exportarPDF(datos, ['Nombre', 'Cliente', 'Estado', 'Fecha de Finalización'], 'proyectos.pdf');
+            break;
+    }
+}
+
+  onResultados(resultados: ListProyectoDTO[]): void {
+    this.proyectos.set(resultados);
   }
+
+
 }

@@ -1,7 +1,7 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateProyectoDto } from "../dtos/input/create-proyecto.dto";
 import { Proyecto } from "../entities/proyecto.entity";
-import { FindOptionsWhere, ILike, Repository, In } from "typeorm";
+import { Repository, In } from "typeorm";
 import { EstadosProyectosEnum } from "../enums/estados-proyectos.enum";
 import { UpdateProyectoDto } from "../dtos/input/update-proyecto.dto";
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
@@ -54,37 +54,42 @@ export class ProyectosService {
 
     async obtenerProyectos(nombre?: string, estado?: EstadosProyectosEnum): Promise<ListProyectoDTO[]> {
 
-        const where: FindOptionsWhere<Proyecto> = {};
+    let query = this.repository.createQueryBuilder('proyecto')
+        .leftJoinAndSelect('proyecto.cliente', 'cliente')
+        .orderBy('proyecto.id', 'ASC');
 
-        if (nombre) {
-            where.nombre = ILike(`%${nombre}%`);
-        }
-
-        if (estado) {
-            where.estado = estado;
-        }
-
-        const proyectos: Proyecto[] = await this.repository.find({ where, relations: ['cliente'], order: { id: 'ASC' } });
-
-        const dtoList: ListProyectoDTO[] = [];
-
-        for (const p of proyectos) {
-            const dto = new ListProyectoDTO();
-            dto.id = p.id;
-            dto.nombre = p.nombre;
-            dto.estado = p.estado;
-            dto.fechaFinalizacion = p.fechaFinalizacion;
-            if (p.cliente) {
-                dto.cliente = new ListClienteDTO();
-                dto.cliente.id = p.cliente.id;
-                dto.cliente.nombre = p.cliente.nombre;
-                dto.cliente.estado = p.cliente.estado;
-            }
-            dtoList.push(dto);
-        }
-
-        return dtoList;
+    if (nombre) {
+        query = query
+            .where('similarity(proyecto.nombre, :nombre) > 0.2 OR proyecto.nombre ILIKE :like', { nombre, like: `%${nombre}%` })
+            .orderBy('similarity(proyecto.nombre, :nombre)', 'DESC')
+            .addOrderBy('proyecto.id', 'ASC')
+            .setParameter('nombre', nombre);
     }
+
+    if (estado) {
+        query = query.andWhere('proyecto.estado = :estado', { estado });
+    }
+
+    const proyectos: Proyecto[] = await query.getMany();
+
+    const dtoList: ListProyectoDTO[] = [];
+    for (const p of proyectos) {
+        const dto = new ListProyectoDTO();
+        dto.id = p.id;
+        dto.nombre = p.nombre;
+        dto.estado = p.estado;
+        dto.fechaFinalizacion = p.fechaFinalizacion;
+        if (p.cliente) {
+            dto.cliente = new ListClienteDTO();
+            dto.cliente.id = p.cliente.id;
+            dto.cliente.nombre = p.cliente.nombre;
+            dto.cliente.estado = p.cliente.estado;
+        }
+        dtoList.push(dto);
+    }
+
+    return dtoList;
+}
 
     async obtenerProyecto(id: number): Promise<ProyectoDTO> {
 
@@ -114,7 +119,7 @@ export class ProyectosService {
         dto.tareas = tareas;
         return dto;
     }
-    
+
     async existeProyectoPorIdCliente(idCliente: number): Promise<boolean> {
         const existe: boolean = await this.repository.exists({ where: { cliente: { id: idCliente }, estado: In([EstadosProyectosEnum.ACTIVO, EstadosProyectosEnum.FINALIZADO]) } });
         return existe;

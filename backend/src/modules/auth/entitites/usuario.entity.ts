@@ -1,19 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { EstadosUsuariosEnum } from "../enums/estados-usuarios.enum";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { EstadosUsuariosEnum } from '../enums/estados-usuarios.enum';
 
-@Entity({name: "usuarios"})
-export class Usuario{
+@Entity({ name: 'usuarios' })
+export class Usuario {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @Column()
+  nombre!: string;
 
-    @Column()
-    nombre!: string
+  @Column()
+  clave!: string;
 
-    @Column()
-    clave!: string
-
-    @Column({type: 'enum', enum: EstadosUsuariosEnum})
-    estado!: EstadosUsuariosEnum
-
+  @Column({ type: 'enum', enum: EstadosUsuariosEnum })
+  estado!: EstadosUsuariosEnum;
 }

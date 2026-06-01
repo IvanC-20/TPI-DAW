@@ -1,5 +1,5 @@
 export enum EstadosProyectosEnum {
-    ACTIVO = 'ACTIVO',
-    FINALIZADO = 'FINALIZADO',
-    BAJA = 'BAJA'
+  ACTIVO = 'ACTIVO',
+  FINALIZADO = 'FINALIZADO',
+  BAJA = 'BAJA',
 }

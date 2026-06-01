@@ -1,139 +1,164 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, FindOptionsWhere, ILike } from "typeorm";
-import { Proyecto } from "../entities/proyecto.entity";
-import { EstadosProyectosEnum } from "../enums/estados-proyectos.enum";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, FindOptionsWhere, ILike } from 'typeorm';
+import { Proyecto } from '../entities/proyecto.entity';
+import { EstadosProyectosEnum } from '../enums/estados-proyectos.enum';
 import * as ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class ProyectosExportacionesService {
+  constructor(
+    @InjectRepository(Proyecto)
+    private readonly repository: Repository<Proyecto>,
+  ) {}
 
-    constructor(@InjectRepository(Proyecto) private readonly repository: Repository<Proyecto>) { }
+  async exportarProyectosCsv(
+    nombre?: string,
+    estado?: EstadosProyectosEnum,
+  ): Promise<string> {
+    const where: FindOptionsWhere<Proyecto> = {};
+    if (nombre) where.nombre = ILike(`%${nombre}%`);
+    if (estado) where.estado = estado;
 
-    async exportarProyectosCsv(nombre?: string, estado?: EstadosProyectosEnum): Promise<string> {
+    const proyectos: Proyecto[] = await this.repository.find({
+      where,
+      relations: ['cliente', 'tareas'],
+      order: { id: 'ASC' },
+    });
 
-        const where: FindOptionsWhere<Proyecto> = {};
-        if (nombre) where.nombre = ILike(`%${nombre}%`);
-        if (estado) where.estado = estado;
+    const titulo = 'Proyectos';
+    const encabezado = 'ID,Nombre,Estado,Cliente,Fecha de Finalización,Tareas';
 
-        const proyectos: Proyecto[] = await this.repository.find({ where, relations: ['cliente', 'tareas'], order: { id: 'ASC' } });
+    const filas = proyectos.map((p) => {
+      const cliente = p.cliente ? p.cliente.nombre : '';
+      const fechaFinalizacion = p.fechaFinalizacion ?? '';
+      const tareas =
+        p.tareas?.map((t) => `${t.descripcion} (${t.estado})`).join(', ') ?? '';
+      return `${p.id},"${p.nombre}",${p.estado},"${cliente}","${fechaFinalizacion}","${tareas}"`;
+    });
 
-        const titulo = 'Proyectos';
-        const encabezado = 'ID,Nombre,Estado,Cliente,Fecha de Finalización,Tareas';
+    return [titulo, encabezado, ...filas].join('\n');
+  }
 
-        const filas = proyectos.map((p) => {
-            const cliente = p.cliente ? p.cliente.nombre : '';
-            const fechaFinalizacion = p.fechaFinalizacion ?? '';
-            const tareas = p.tareas?.map(t => `${t.descripcion} (${t.estado})`).join(', ') ?? '';
-            return `${p.id},"${p.nombre}",${p.estado},"${cliente}","${fechaFinalizacion}","${tareas}"`;
-        });
+  async exportarProyectosJson(
+    nombre?: string,
+    estado?: EstadosProyectosEnum,
+  ): Promise<string> {
+    const where: FindOptionsWhere<Proyecto> = {};
+    if (nombre) where.nombre = ILike(`%${nombre}%`);
+    if (estado) where.estado = estado;
 
-        return [titulo, encabezado, ...filas].join('\n');
-    }
-    
-    async exportarProyectosJson(nombre?: string, estado?: EstadosProyectosEnum): Promise<string> {
+    const proyectos: Proyecto[] = await this.repository.find({
+      where,
+      relations: ['cliente', 'tareas'],
+      order: { id: 'ASC' },
+    });
 
-        const where: FindOptionsWhere<Proyecto> = {};
-        if (nombre) where.nombre = ILike(`%${nombre}%`);
-        if (estado) where.estado = estado;
+    const data = proyectos.map((p) => ({
+      id: p.id,
+      nombre: p.nombre,
+      estado: p.estado,
+      cliente: p.cliente
+        ? { id: p.cliente.id, nombre: p.cliente.nombre }
+        : null,
+      fechaFinalizacion: p.fechaFinalizacion ?? null,
+      tareas:
+        p.tareas?.map((t) => ({
+          id: t.id,
+          descripcion: t.descripcion,
+          estado: t.estado,
+        })) ?? [],
+    }));
 
-        const proyectos: Proyecto[] = await this.repository.find({
-            where,
-            relations: ['cliente', 'tareas'],
-            order: { id: 'ASC' }
-        });
+    return JSON.stringify(data, null, 2);
+  }
 
-        const data = proyectos.map((p) => ({
-            id: p.id,
-            nombre: p.nombre,
-            estado: p.estado,
-            cliente: p.cliente ? { id: p.cliente.id, nombre: p.cliente.nombre } : null,
-            fechaFinalizacion: p.fechaFinalizacion ?? null,
-            tareas: p.tareas?.map(t => ({ id: t.id, descripcion: t.descripcion, estado: t.estado })) ?? []
-        }));
+  async exportarProyectosExcel(
+    nombre?: string,
+    estado?: EstadosProyectosEnum,
+  ): Promise<ArrayBuffer> {
+    const where: FindOptionsWhere<Proyecto> = {};
+    if (nombre) where.nombre = ILike(`%${nombre}%`);
+    if (estado) where.estado = estado;
 
-        return JSON.stringify(data, null, 2);
-    }
+    const proyectos: Proyecto[] = await this.repository.find({
+      where,
+      relations: ['cliente', 'tareas'],
+      order: { id: 'ASC' },
+    });
 
-    async exportarProyectosExcel(nombre?: string, estado?: EstadosProyectosEnum): Promise<ArrayBuffer> {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Proyectos');
 
-        const where: FindOptionsWhere<Proyecto> = {};
-        if (nombre) where.nombre = ILike(`%${nombre}%`);
-        if (estado) where.estado = estado;
+    // Encabezados
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'Nombre', key: 'nombre', width: 30 },
+      { header: 'Estado', key: 'estado', width: 15 },
+      { header: 'Cliente', key: 'cliente', width: 25 },
+      { header: 'Fecha Finalización', key: 'fechaFinalizacion', width: 20 },
+      { header: 'Tareas', key: 'tareas', width: 50 },
+    ];
 
-        const proyectos: Proyecto[] = await this.repository.find({
-            where,
-            relations: ['cliente', 'tareas'],
-            order: { id: 'ASC' }
-        });
+    // Estilo del encabezado
+    sheet.getRow(1).font = { bold: true };
 
-        const workbook = new ExcelJS.Workbook();
-        const sheet = workbook.addWorksheet('Proyectos');
+    // Filas
+    proyectos.forEach((p) => {
+      sheet.addRow({
+        id: p.id,
+        nombre: p.nombre,
+        estado: p.estado,
+        cliente: p.cliente?.nombre ?? '',
+        fechaFinalizacion: p.fechaFinalizacion ?? '',
+        tareas:
+          p.tareas?.map((t) => `${t.descripcion} (${t.estado})`).join(', ') ??
+          '',
+      });
+    });
 
-        // Encabezados
-        sheet.columns = [
-            { header: 'ID', key: 'id', width: 10 },
-            { header: 'Nombre', key: 'nombre', width: 30 },
-            { header: 'Estado', key: 'estado', width: 15 },
-            { header: 'Cliente', key: 'cliente', width: 25 },
-            { header: 'Fecha Finalización', key: 'fechaFinalizacion', width: 20 },
-            { header: 'Tareas', key: 'tareas', width: 50 },
-        ];
+    return workbook.xlsx.writeBuffer();
+  }
 
-        // Estilo del encabezado
-        sheet.getRow(1).font = { bold: true };
+  async exportarProyectosPDF(
+    nombre?: string,
+    estado?: EstadosProyectosEnum,
+  ): Promise<Buffer> {
+    const where: FindOptionsWhere<Proyecto> = {};
+    if (nombre) where.nombre = ILike(`%${nombre}%`);
+    if (estado) where.estado = estado;
 
-        // Filas
-        proyectos.forEach((p) => {
-            sheet.addRow({
-                id: p.id,
-                nombre: p.nombre,
-                estado: p.estado,
-                cliente: p.cliente?.nombre ?? '',
-                fechaFinalizacion: p.fechaFinalizacion ?? '',
-                tareas: p.tareas?.map(t => `${t.descripcion} (${t.estado})`).join(', ') ?? ''
-            });
-        });
+    const proyectos: Proyecto[] = await this.repository.find({
+      where,
+      relations: ['cliente', 'tareas'],
+      order: { id: 'ASC' },
+    });
 
-        return workbook.xlsx.writeBuffer();
-    }
+    const doc = new PDFDocument({ margin: 40 });
+    const chunks: Buffer[] = [];
 
-    async exportarProyectosPDF(nombre?: string, estado?: EstadosProyectosEnum): Promise<Buffer> {
+    return new Promise<Buffer>((resolve, reject) => {
+      doc.on('data', (chunk) => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', reject);
 
-        const where: FindOptionsWhere<Proyecto> = {};
-        if (nombre) where.nombre = ILike(`%${nombre}%`);
-        if (estado) where.estado = estado;
+      // Título
+      doc.fontSize(18).text('Listado de Proyectos', { align: 'center' });
+      doc.moveDown();
 
-        const proyectos: Proyecto[] = await this.repository.find({
-            where,
-            relations: ['cliente', 'tareas'],
-            order: { id: 'ASC' }
-        });
+      // Filas
+      proyectos.forEach((p, i) => {
+        doc.fontSize(11).text(`${i + 1}. ${p.nombre}`);
+        doc
+          .fontSize(10)
+          .text(`   Estado: ${p.estado}`)
+          .text(`   Cliente: ${p.cliente?.nombre ?? '-'}`)
+          .text(`   Fecha de finalización: ${p.fechaFinalizacion ?? '-'}`);
+        doc.moveDown(0.5);
+      });
 
-        const doc = new PDFDocument({ margin: 40 });
-        const chunks: Buffer[] = [];
-
-        return new Promise<Buffer>((resolve, reject) => {
-            doc.on('data', chunk => chunks.push(chunk));
-            doc.on('end', () => resolve(Buffer.concat(chunks)));
-            doc.on('error', reject);
-
-            // Título
-            doc.fontSize(18).text('Listado de Proyectos', { align: 'center' });
-            doc.moveDown();
-
-            // Filas
-            proyectos.forEach((p, i) => {
-                doc.fontSize(11).text(`${i + 1}. ${p.nombre}`);
-                doc.fontSize(10)
-                    .text(`   Estado: ${p.estado}`)
-                    .text(`   Cliente: ${p.cliente?.nombre ?? '-'}`)
-                    .text(`   Fecha de finalización: ${p.fechaFinalizacion ?? '-'}`);
-                doc.moveDown(0.5);
-            });
-
-            doc.end();
-        });
-    }
+      doc.end();
+    });
+  }
 }

@@ -25,11 +25,13 @@ async function bootstrap() {
   if (process.env.SWAGGER_HABILITADO === 'true') {
     const config = new DocumentBuilder()
       .setTitle('Sistema de Gestión de Proyectos')
-      .setDescription('Descripción de la API del sistema de gestión de proyectos')
+      .setDescription(
+        'Descripción de la API del sistema de gestión de proyectos',
+      )
       .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(globalPrefix, app, document);
+    SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
   }
 
   await app.listen(process.env.PORT ?? 3000);
