@@ -36,6 +36,24 @@
                 placeholder="Buscar por nombre..."
                 (resultados)="onResultados($event)" 
             />
+                    <!-- <p-button 
+                        id="boton-gestionar-tareas" 
+                        icon="pi pi-list" 
+                        pTooltip="Gestionar Tareas"
+                        (click)="gestionarTareas(proyecto)">
+                    </p-button>
+                    <p-button 
+                        icon="pi pi-pencil" 
+                        pTooltip="Editar Proyecto" 
+                        severity="warn"
+                        (click)="editarProyecto(proyecto)">
+                    </p-button>
+                    <p-button 
+                        icon="pi pi-copy" 
+                        pTooltip="Copiar datos" 
+                        severity="secondary"
+                        (click)="copiarAlPortapapeles(proyecto)">
+                    </p-button> -->
             <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh">
                 <ng-template #header>
                     <tr>
