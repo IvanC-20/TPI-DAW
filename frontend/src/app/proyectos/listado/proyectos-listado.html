@@ -1,67 +1,47 @@
 <app-template>
-    <div id="layout">
-        <aside id="panel-izquierdo">
-            <p-button 
-                icon="pi pi-plus" 
-                label="Nuevo" 
-                severity="success" 
-                [fluid]="true"
-                (click)="crearProyecto()">
+    <main>
+        <div id="panel-izquierdo" class="flex flex-column">
+            <p-button icon="pi pi-plus" label="Nuevo" severity="success" [fluid]="true" (click)="crearProyecto()">
             </p-button>
-            <nav id="acciones">
-                <div>
-                    <h4>+ Acciones...</h4>
-                    <p-menu 
-                        #menuExportar 
-                        [model]="opcionesExportar" 
-                        [popup]="true" 
-                        appendTo="body" 
-                    />           
-                    <p-button 
-                        icon="pi pi-file-export" 
-                        label="Exportar" 
-                        severity="secondary"
-                        (click)="menuExportar.toggle($event)">
-                    </p-button>
-                </div>
-            <!-- <p-button icon="pi pi-file-export" label="Exportar" severity="secondary" (click)="menuExportar.toggle($event)"></p-button> -->
-                <!-- <p-menu #menuExportar [model]="opcionesExportar" [popup]="true" appendTo="body" /> -->
-            </nav>
-        </aside>
-        <main id="panel-derecho">
-            <app-fuzzy-search
+
+            <!-- gestionarTareas -->
+            <p-button class="panel-derecho acciones-principales gestionar-tareas" id="boton-gestionar-tareas"
+                icon="pi pi-list" pTooltip="Gestionar Tareas" (click)="devolverNada()">
+            </p-button>
+            <!-- editarProyecto -->
+            <p-button class="panel-derecho acciones-principales editar-proyecto" icon="pi pi-pencil"
+                pTooltip="Editar Proyecto" severity="warn" (click)="devolverNada()">
+            </p-button>
+            <!-- copiarAlPortapapeles -->
+            <p-button class="panel-derecho aciones-principales copiar-datos" icon="pi pi-copy" pTooltip="Copiar datos"
+                severity="secondary" (click)="devolverNada()">
+            </p-button>
+
+
+            <p-menu #menuExportar [model]="opcionesExportar" [popup]="true" appendTo="body" />
+            <p-button icon="pi pi-file-export" label="Exportar" severity="secondary"
+                (click)="menuExportar.toggle($event)">
+            </p-button>
+        </div>
+        <div id="panel-derecho" class="flex flex-column">
+            <app-fuzzy-search 
                 #fuzzySearch
-                [items]="proyectosFiltradosPorEstado"
-                searchKey="nombre"
+                [items]="proyectosFiltradosPorEstado" 
+                searchKey="nombre" 
                 placeholder="Buscar por nombre..."
                 (resultados)="onResultados($event)" 
             />
-                    <!-- <p-button 
-                        id="boton-gestionar-tareas" 
-                        icon="pi pi-list" 
-                        pTooltip="Gestionar Tareas"
-                        (click)="gestionarTareas(proyecto)">
-                    </p-button>
-                    <p-button 
-                        icon="pi pi-pencil" 
-                        pTooltip="Editar Proyecto" 
-                        severity="warn"
-                        (click)="editarProyecto(proyecto)">
-                    </p-button>
-                    <p-button 
-                        icon="pi pi-copy" 
-                        pTooltip="Copiar datos" 
-                        severity="secondary"
-                        (click)="copiarAlPortapapeles(proyecto)">
-                    </p-button> -->
-            <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh">
+            
+            <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '48.5rem' }" [scrollable]="true"
+                scrollHeight="70vh">
                 <ng-template #header>
                     <tr>
-                        <th><p-checkbox [(ngModel)]="seleccionarTodos" [binary]="true" (onChange)="toggleSeleccionarTodos()"></p-checkbox></th>
+                        <th><p-checkbox [(ngModel)]="seleccionarTodos" [binary]="true"
+                                (onChange)="toggleSeleccionarTodos()"></p-checkbox></th>
                         <th>Nombre</th>
                         <th>Cliente</th>
                         <th>Estado</th>
-                        <th>Finaliza en</th>
+                        <!-- <th>Finaliza en</th> -->
                     </tr>
                 </ng-template>
                 <ng-template #body let-proyecto>
@@ -69,8 +49,9 @@
                         <td><p-checkbox [(ngModel)]="proyecto.seleccionado" [binary]="true"></p-checkbox></td>
                         <td>{{ proyecto.nombre }}</td>
                         <td>{{ proyecto.cliente ? proyecto.cliente.nombre : '' }}</td>
-                        <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span></td>
-                        <td [class]="estadoFecha(proyecto).clase">{{ estadoFecha(proyecto).texto }}</td>
+                        <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span>
+                        </td>
+                        <!-- <td [class]="estadoFecha(proyecto).clase">{{ estadoFecha(proyecto).texto }}</td> -->
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
@@ -79,84 +60,10 @@
                     </tr>
                 </ng-template>
             </p-table>
-        </main>
-    </div>
-</app-template>
-<app-gestion-proyecto [(visible)]="dialogVisible" [(proyectoSeleccionado)]="proyectoSeleccionado"></app-gestion-proyecto>
-
-
-
-<!--<app-template>
-    <section id">
-
-    </section>
-    <section id="der">
-
-    </section>
-    <div id="acciones">
-        <div id="crear-proyecto">
-            <p-button icon="pi pi-plus" label="Crear Proyecto" severity="success" (click)="crearProyecto()">
-            </p-button>
         </div>
-        <div id="busqueda"> 
-            <app-fuzzy-search 
-                [items]="proyectosFiltradosPorEstado" 
-                searchKey="nombre" 
-                placeholder="Buscar por nombre..."
-                (resultados)="onResultados($event)" 
-            />
-        </div>
-        < <div id="otras-herramientas"> -->
-            <!-- <p-menu 
-                #menuExportar 
-                [model]="opcionesExportar" 
-                [popup]="true" 
-                appendTo="body" 
-            /> -->
+    </main>
 
-           
-            <!-- <p-button 
-                icon="pi pi-file-export" 
-                label="Exportar" 
-                severity="secondary"
-                (click)="menuExportar.toggle($event)">
-            </p-button> -->
-        <!-- </div> -->
-    <!-- </div>
-    <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true"
-        scrollHeight="60vh">
-        <ng-template #header>
-            <tr>
-                <th>Nombre</th>
-                <th>Cliente</th>
-                <th>Estado</th>
-                <th>Fecha de Finalización</th>
-                <th>Acciones</th>
-            </tr>
-        </ng-template>
-        <ng-template #body let-proyecto>
-            <tr>
-                <td>{{ proyecto.nombre }}</td>
-                <td>{{ proyecto.cliente ? proyecto.cliente.nombre : '' }}</td>
-                <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span></td>
-                <td [class]="estadoFecha(proyecto).clase">{{ estadoFecha(proyecto).texto }}</td>
-                <td class="acciones">
-                    <p-button id="boton-gestionar-tareas" icon="pi pi-list" pTooltip="Gestionar Tareas"
-                        (click)="gestionarTareas(proyecto)"></p-button>
-                    <p-button icon="pi pi-pencil" pTooltip="Editar Proyecto" severity="warn"
-                        (click)="editarProyecto(proyecto)"></p-button>
-                    <p-button icon="pi pi-copy" pTooltip="Copiar datos" severity="secondary"
-                        (click)="copiarAlPortapapeles(proyecto)"></p-button>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-            <tr>
-                <td colspan="5">No se encontraron proyectos.</td>
-            </tr>
-        </ng-template>
-    </p-table>
+
 </app-template>
 <app-gestion-proyecto [(visible)]="dialogVisible"
-    [(proyectoSeleccionado)]="proyectoSeleccionado"></app-gestion-proyecto> -->
-
+    [(proyectoSeleccionado)]="proyectoSeleccionado"></app-gestion-proyecto>

@@ -172,6 +172,6 @@ exportar(formato: 'csv' | 'json' | 'excel' | 'pdf'): void {
   onResultados(resultados: ListProyectoDTO[]): void {
     this.proyectos.set(resultados);
   }
-
+devolverNada(){return 0}
 
 }
