@@ -10,37 +10,62 @@
         
     </div>
     <div id="filtros">
-        <input pInputText type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtroPorNombre" (keyup.enter)="buscar()" />
-        <p-select [options]="opciones" optionLabel="label" optionValue="value" [(ngModel)]="filtroPorEstado" placeholder="Filtrar por estado" appendTo="body"></p-select>
-        <p-button icon="pi pi-search" label="Buscar" (click)="buscar()"></p-button>
+        <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroPorNombre()" (ngModelChange)="filtroPorNombre.set($event); buscar()" />
+        <p-select [options]="opciones" optionLabel="label" optionValue="value" [ngModel]="filtroPorEstado()" (ngModelChange)="filtroPorEstado.set($event); buscar()" placeholder="Filtrar por estado" appendTo="body"></p-select>
         <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
     </div>
-    <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh">
+    <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh" [sortMode]="'single'">
         <ng-template #header>
             <tr>
-                <th>Nombre</th>
-                <th>Cliente</th>
-                <th>Estado</th>
-                <th>Fecha de Finalización</th>
+                <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"/></th>
+                <th pSortableColumn="cliente.nombre">Cliente <p-sortIcon field="cliente.nombre"/></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="estado"/></th>
+                <th pSortableColumn="fechaFinalizacion">Fecha de Finalización <p-sortIcon field="fechaFinalizacion"/></th>
+                <th>Estado del Plazo</th>
+                <th>Progreso</th>
                 <th>Acciones</th>
             </tr>
         </ng-template>
         <ng-template #body let-proyecto>
             <tr>
-                <td>{{ proyecto.nombre }}</td>
+                <td>
+                    @if (diasRestantes(proyecto).clase === 'retrasado') {
+                        <i class="pi pi-exclamation-triangle icono-retrasado" pTooltip="Proyecto retrasado" tooltipPosition="top"></i>
+                    }
+                    {{ proyecto.nombre }}
+                </td>
                 <td>{{ proyecto.cliente ? proyecto.cliente.nombre : '' }}</td>
                 <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span></td>
-                <td [class]="estadoFecha(proyecto).clase">{{ estadoFecha(proyecto).texto }}</td>
+                <td>{{ estadoFecha(proyecto) }}</td>
+                <td [class]="diasRestantes(proyecto).clase">{{ diasRestantes(proyecto).texto }}</td>
+                <td class="celda-progreso">
+                    @if (proyecto.totalTareas > 0) {
+                        <div class="barra-progreso" [pTooltip]="proyecto.tareasFinalizadas + ' de ' + proyecto.totalTareas + ' tareas finalizadas'" tooltipPosition="top">
+                            <div class="barra-relleno" [style.width.%]="(proyecto.tareasFinalizadas / proyecto.totalTareas) * 100" [style.background-color]="colorProgreso(proyecto)"></div>
+                        </div>
+                        <span class="texto-progreso">{{ proyecto.tareasFinalizadas }}/{{ proyecto.totalTareas }}</span>
+                    } @else {
+                        <span class="sin-tareas">Sin tareas</span>
+                    }
+                </td>
                 <td class="acciones">
                     <p-button id="boton-gestionar-tareas" icon="pi pi-list" pTooltip="Gestionar Tareas" (click)="gestionarTareas(proyecto)"></p-button>
                     <p-button icon="pi pi-pencil" pTooltip="Editar Proyecto" severity="warn" (click)="editarProyecto(proyecto)"></p-button>
+                    <p-button icon="pi pi-clone" pTooltip="Duplicar Proyecto" severity="success" (click)="duplicarProyecto(proyecto)"></p-button>
                     <p-button icon="pi pi-copy" pTooltip="Copiar datos" severity="secondary" (click)="copiarAlPortapapeles(proyecto)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #footer>
+            <tr>
+                <td colspan="7" id="footer-tabla">
+                    {{ proyectos().length }} {{ proyectos().length === 1 ? 'proyecto encontrado' : 'proyectos encontrados' }}
                 </td>
             </tr>
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="5">No se encontraron proyectos.</td>
+                <td colspan="7">No se encontraron proyectos.</td>
             </tr>
         </ng-template>
     </p-table>

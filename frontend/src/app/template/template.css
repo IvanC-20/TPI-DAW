@@ -53,6 +53,29 @@
     background-color: #ffffff;
 }
 
+#usuario {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#info-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+}
+
+#bienvenida {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+#fecha-hoy {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
 ::ng-deep .p-button {
     font-size: 0.8rem !important;
 }

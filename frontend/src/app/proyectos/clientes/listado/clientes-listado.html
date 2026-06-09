@@ -1,11 +1,18 @@
-<p-dialog header="Clientes" [modal]="true" [(visible)]="visible" [style]="{ width: '50rem' }">
-    <p-button id="boton-crear-cliente" icon="pi pi-plus" label="Crear Cliente" severity="success" (click)="crearCliente()"></p-button>
-    <p-table id="tabla" [value]="clientes()" [scrollable]="true"
-        scrollHeight="70vh">
+<p-dialog header="Clientes" [modal]="true" [(visible)]="visible" [style]="{ width: '50rem' }" (onHide)="limpiarFiltros()">
+    <div id="acciones-clientes">
+        <p-button icon="pi pi-plus" label="Crear Cliente" severity="success" (click)="crearCliente()"></p-button>
+    </div>
+    <div id="filtros-clientes">
+        <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroNombre()" (ngModelChange)="filtroNombre.set($event)" />
+        <p-select [options]="opcionesFiltro" optionLabel="label" optionValue="value" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)" placeholder="Filtrar por estado" appendTo="body"></p-select>
+        <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
+    </div>
+    <p-table id="tabla" [value]="clientes" [scrollable]="true"
+        scrollHeight="70vh" [sortMode]="'single'">
         <ng-template #header>
             <tr>
-                <th>Nombre</th>
-                <th>Estado</th>
+                <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"/></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="estado"/></th>
                 <th>Acciones</th>
             </tr>
         </ng-template>
@@ -13,9 +20,16 @@
             <tr>
                 <td>{{ cliente.nombre }}</td>
                 <td><span [class]="'badge badge-' + cliente.estado.toLowerCase()">{{ cliente.estado }}</span></td>
-                <td>
+                <td class="acciones">
                     <p-button icon="pi pi-pencil" pTooltip="Editar Cliente" severity="warn" (click)="editarCliente(cliente)"></p-button>
                     <p-button icon="pi pi-copy" pTooltip="Copiar datos" severity="secondary" (click)="copiarAlPortapapeles(cliente)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #footer>
+            <tr>
+                <td colspan="3" id="footer-tabla">
+                    {{ clientes.length }} {{ clientes.length === 1 ? 'cliente encontrado' : 'clientes encontrados' }}
                 </td>
             </tr>
         </ng-template>

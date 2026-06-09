@@ -1,3 +1,30 @@
 #tabla{
     margin-top: 1rem;
+}
+
+#acciones-clientes {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+#filtros-clientes {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+#footer-tabla {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: right;
+    padding: 0.5rem 1rem;
+}
+
+.acciones {
+    display: flex;
+    gap: 0.35rem;
 }   

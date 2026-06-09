@@ -29,7 +29,14 @@ export class ProyectosService {
             }
         }
 
-        await this.repository.save(proyecto);
+        try {
+            await this.repository.save(proyecto);
+        } catch (e: any) {
+            if (e?.code === '23505') {
+                throw new BadRequestException('Ya existe un proyecto con ese nombre');
+            }
+            throw e;
+        }
         return { id: proyecto.id };
     }
 
@@ -64,7 +71,7 @@ export class ProyectosService {
             where.estado = estado;
         }
 
-        const proyectos: Proyecto[] = await this.repository.find({ where, relations: ['cliente'], order: { id: 'ASC' } });
+        const proyectos: Proyecto[] = await this.repository.find({ where, relations: ['cliente', 'tareas'], order: { id: 'ASC' } });
 
         const dtoList: ListProyectoDTO[] = [];
 
@@ -80,6 +87,16 @@ export class ProyectosService {
                 dto.cliente.nombre = p.cliente.nombre;
                 dto.cliente.estado = p.cliente.estado;
             }
+            dto.totalTareas = p.tareas?.length ?? 0;
+            dto.tareasFinalizadas = p.tareas?.filter(t => t.estado === 'FINALIZADA').length ?? 0;
+            dto.tareas = (p.tareas ?? []).map(t => {
+                const tareaDto = new ListTareaDTO();
+                tareaDto.id = t.id;
+                tareaDto.descripcion = t.descripcion;
+                tareaDto.estado = t.estado;
+                tareaDto.nombreProyecto = p.nombre;
+                return tareaDto;
+            });
             dtoList.push(dto);
         }
 
@@ -108,6 +125,7 @@ export class ProyectosService {
             tareaDto.id = t.id;
             tareaDto.descripcion = t.descripcion;
             tareaDto.estado = t.estado;
+            tareaDto.nombreProyecto = proyecto.nombre;
             tareas.push(tareaDto);
         }
 

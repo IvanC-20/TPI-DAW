@@ -7,12 +7,15 @@ import { ListClienteDTO } from "./list-cliente-dto";
 import { DialogModule } from "primeng/dialog";
 import { GestionCliente } from "../gestion/gestion-cliente";
 import { TooltipModule } from "primeng/tooltip";
+import { SelectModule } from "primeng/select";
+import { FormsModule } from "@angular/forms";
+import { InputTextModule } from "primeng/inputtext";
 
 @Component({
   selector: "app-clientes-listado",
   templateUrl: "./clientes-listado.html",
   styleUrls: ["./clientes-listado.css"],
-  imports: [TableModule, ButtonModule, DialogModule, GestionCliente, TooltipModule]
+  imports: [TableModule, ButtonModule, DialogModule, GestionCliente, TooltipModule, SelectModule, FormsModule, InputTextModule]
 })
 export class ClientesListado implements OnInit {
 
@@ -22,7 +25,30 @@ export class ClientesListado implements OnInit {
 
   private readonly clientesListadoApiClient: ClientesListadoApiClient = inject(ClientesListadoApiClient);
 
-  clientes: WritableSignal<ListClienteDTO[]> = signal([]);
+  todosLosClientes: WritableSignal<ListClienteDTO[]> = signal([]);
+
+  filtroNombre: WritableSignal<string> = signal('');
+  filtroEstado: WritableSignal<string | null> = signal(null);
+
+  readonly opcionesFiltro = [
+    { label: 'Todos', value: null },
+    { label: 'Activo', value: 'ACTIVO' },
+    { label: 'Baja', value: 'BAJA' }
+  ];
+
+  get clientes(): ListClienteDTO[] {
+    let lista = this.todosLosClientes();
+    const nombre = this.filtroNombre().toLowerCase().trim();
+    const estado = this.filtroEstado();
+    if (nombre) lista = lista.filter(c => c.nombre.toLowerCase().includes(nombre));
+    if (estado) lista = lista.filter(c => c.estado === estado);
+    return lista;
+  }
+
+  limpiarFiltros(): void {
+    this.filtroNombre.set('');
+    this.filtroEstado.set(null);
+  }
 
   dialogVisible: WritableSignal<boolean> = signal(false);
 
@@ -43,7 +69,7 @@ export class ClientesListado implements OnInit {
   refrescarClientes(): void {
     this.clientesListadoApiClient.buscarClientes().subscribe({
       next: (data) => {
-        this.clientes.set(data);
+        this.todosLosClientes.set(data);
       },
       error: (error) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener los clientes' });

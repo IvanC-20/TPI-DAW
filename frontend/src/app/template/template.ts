@@ -13,6 +13,9 @@ export class Template {
 
     private readonly authStore: AuthStore = inject(AuthStore);
 
+    readonly nombreUsuario = this.authStore.obtenerNombreUsuario();
+    readonly fechaHoy = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
     cerrarSesion() {
         this.authStore.cerrarSesion();
     }

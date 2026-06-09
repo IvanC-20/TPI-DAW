@@ -16,6 +16,17 @@ export class AuthStore {
         return sessionStorage.getItem("accessToken");
     }
 
+    obtenerNombreUsuario(): string | null {
+        const token = this.obtenerToken();
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.nombre ?? payload.sub ?? null;
+        } catch {
+            return null;
+        }
+    }
+
     cerrarSesion(): void {
         sessionStorage.removeItem("accessToken");
         this.router.navigateByUrl("/login");

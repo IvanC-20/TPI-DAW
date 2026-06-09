@@ -4,7 +4,13 @@
         <a routerLink="/proyectos" routerLinkActive="activo">Proyectos</a>
         <a routerLink="/estadisticas" routerLinkActive="activo">Estadísticas</a>
     </nav>
-    <p-button id="boton-cerrar-sesion" icon="pi pi-sign-out" label="Cerrar Sesión" severity="danger" (click)="cerrarSesion()"></p-button>
+    <div id="usuario">
+        <div id="info-usuario">
+            <span id="bienvenida">Hola, {{ nombreUsuario }}</span>
+            <span id="fecha-hoy">{{ fechaHoy }}</span>
+        </div>
+        <p-button id="boton-cerrar-sesion" icon="pi pi-sign-out" label="Cerrar Sesión" severity="danger" (click)="cerrarSesion()"></p-button>
+    </div>
 </header>
 <div id="content">
     <ng-content></ng-content>

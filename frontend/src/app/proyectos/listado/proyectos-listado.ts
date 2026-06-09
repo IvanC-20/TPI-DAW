@@ -7,6 +7,8 @@ import { ButtonModule } from "primeng/button";
 import { Template } from "../../template/template";
 import { TooltipModule } from 'primeng/tooltip';
 import { GestionProyecto } from "../gestion/gestion-proyecto";
+import { GestionProyectoApiClient } from "../gestion/gestion-proyecto-api-client";
+import { GestionTareaApiClient } from "../tareas/gestion/gestion-tarea-api-client";
 import { FormsModule } from "@angular/forms";
 import { SelectModule } from "primeng/select";
 import { EstadosProyectosEnum } from "../estados-proyectos-enum";
@@ -27,6 +29,8 @@ export class ProyectosListado implements OnInit {
 
   private readonly messageService: MessageService = inject(MessageService);
   private readonly proyectosListadoApiClient: ProyectosListadoApiClient = inject(ProyectosListadoApiClient);
+  private readonly gestionProyectoApiClient: GestionProyectoApiClient = inject(GestionProyectoApiClient);
+  private readonly gestionTareaApiClient: GestionTareaApiClient = inject(GestionTareaApiClient);
   private readonly router: Router = inject(Router);
 
   proyectos: WritableSignal<ListProyectoDTO[]> = signal([]);
@@ -86,28 +90,79 @@ export class ProyectosListado implements OnInit {
     this.proyectoSeleccionado.set(proyecto);
   }
 
+  duplicarProyecto(proyecto: ListProyectoDTO): void {
+    const dto = {
+      nombre: `${proyecto.nombre} - copia ${new Date().toLocaleDateString('es-AR')}`,
+      idCliente: proyecto.cliente?.id ?? null,
+      fechaFinalizacion: null
+    };
+    this.gestionProyectoApiClient.crearProyecto(dto).subscribe({
+      next: ({ id }) => {
+        const tareas = proyecto.tareas ?? [];
+        if (tareas.length === 0) {
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Proyecto duplicado correctamente.' });
+          this.refrescarProyectos();
+          return;
+        }
+        let completadas = 0;
+        for (const tarea of tareas) {
+          this.gestionTareaApiClient.crearTarea(id, { descripcion: tarea.descripcion }).subscribe({
+            next: () => {
+              completadas++;
+              if (completadas === tareas.length) {
+                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Proyecto duplicado con sus tareas.' });
+                this.refrescarProyectos();
+              }
+            }
+          });
+        }
+      },
+      error: (err) => {
+        const detail = err.error?.statusCode >= 400 && err.error?.statusCode < 500
+          ? err.error.message
+          : 'Error al duplicar el proyecto.';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail });
+      }
+    });
+  }
+
   gestionarTareas(proyecto: ListProyectoDTO): void {
     this.router.navigateByUrl(`/proyectos/${proyecto.id}/tareas`);
   }
 
-  estadoFecha(proyecto: ListProyectoDTO): { texto: string; clase: string } {
+  colorProgreso(proyecto: ListProyectoDTO): string {
+    if (proyecto.totalTareas === 0) return '#16a34a';
+    const pct = (proyecto.tareasFinalizadas / proyecto.totalTareas) * 100;
+    if (pct <= 30) return '#dc2626';
+    if (pct <= 70) return '#d97706';
+    return '#16a34a';
+  }
+
+  diasRestantes(proyecto: ListProyectoDTO): { texto: string; clase: string } {
     if (!proyecto.fechaFinalizacion) {
       return { texto: '-', clase: '' };
     }
     if (proyecto.estado === EstadosProyectosEnum.FINALIZADO || proyecto.estado === EstadosProyectosEnum.BAJA) {
-      return { texto: proyecto.fechaFinalizacion, clase: '' };
+      return { texto: '-', clase: '' };
     }
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     const fecha = new Date(proyecto.fechaFinalizacion + 'T00:00:00');
     const dias = Math.round((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+    const pluralDia = (n: number) => n === 1 ? 'día' : 'días';
     if (dias < 0) {
-      return { texto: `Retrasado ${Math.abs(dias)} días`, clase: 'retrasado' };
+      const d = Math.abs(dias);
+      return { texto: `Retrasado ${d} ${pluralDia(d)}`, clase: 'retrasado' };
     }
     if (dias === 0) {
       return { texto: 'Vence hoy', clase: 'vence-hoy' };
     }
-    return { texto: `${dias} días restantes`, clase: 'en-tiempo' };
+    const restante = dias === 1 ? 'restante' : 'restantes';
+    return { texto: `${dias} ${pluralDia(dias)} ${restante}`, clase: 'en-tiempo' };
+  }
+
+  estadoFecha(proyecto: ListProyectoDTO): string {
+    return proyecto.fechaFinalizacion ?? '-';
   }
 
   copiarAlPortapapeles(proyecto: ListProyectoDTO): void {
@@ -116,7 +171,9 @@ export class ProyectosListado implements OnInit {
       `Nombre: ${proyecto.nombre}`,
       `Cliente: ${proyecto.cliente?.nombre || '-'}`,
       `Estado: ${proyecto.estado}`,
-      `Fecha de finalización: ${proyecto.fechaFinalizacion || '-'}`
+      `Fecha de finalización: ${proyecto.fechaFinalizacion || '-'}`,
+      `Estado del plazo: ${this.diasRestantes(proyecto).texto}`,
+      `Tareas: ${proyecto.tareas?.length ? proyecto.tareas.map(t => `${t.descripcion} (${t.estado})`).join(', ') : 'Sin tareas'}`
     ].join('\n');
 
     navigator.clipboard.writeText(texto).then(() => {

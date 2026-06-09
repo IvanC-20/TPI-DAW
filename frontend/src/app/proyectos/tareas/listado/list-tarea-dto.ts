@@ -4,4 +4,5 @@ export interface ListTareaDTO{
     id: number;
     descripcion: string;
     estado: EstadosTareasEnum;
+    nombreProyecto: string | null;
 }

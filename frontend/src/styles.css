@@ -67,6 +67,11 @@ body {
     border-bottom: 2px solid #e5e7eb !important;
 }
 
+/* Íconos de ordenamiento */
+.p-datatable-sort-icon {
+    color: #374151 !important;
+}
+
 /* Toast — texto legible */
 .p-toast .p-toast-message .p-toast-message-text .p-toast-summary {
     color: #111827 !important;

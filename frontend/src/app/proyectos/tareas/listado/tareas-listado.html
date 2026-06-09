@@ -31,13 +31,20 @@
             <span class="badge badge-baja">{{ tareasBaja() }}</span>
         </div>
     </section>
-    <p-button id="boton-crear-tarea" icon="pi pi-plus" label="Crear Tarea" severity="success" (click)="crearTarea()"></p-button>
+    <div id="acciones-tareas">
+        <p-button icon="pi pi-plus" label="Crear Tarea" severity="success" (click)="crearTarea()"></p-button>
+    </div>
+    <div id="filtros-tareas">
+        <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroNombre()" (ngModelChange)="filtroNombre.set($event)" />
+        <p-select [options]="opcionesFiltro" optionLabel="label" optionValue="value" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)" placeholder="Filtrar por estado" appendTo="body"></p-select>
+        <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
+    </div>
     <p-table id="tabla" [value]="tareas()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true"
-        scrollHeight="50vh">
+        scrollHeight="50vh" [sortMode]="'single'">
         <ng-template #header>
             <tr>
-                <th>Nombre</th>
-                <th>Estado</th>
+                <th pSortableColumn="descripcion">Nombre <p-sortIcon field="descripcion"/></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="estado"/></th>
                 <th>Acciones</th>
             </tr>
         </ng-template>
@@ -52,6 +59,13 @@
                 </td>
             </tr>
         </ng-template>
+        <ng-template #footer>
+            <tr>
+                <td colspan="3" id="footer-tabla">
+                    {{ tareas().length }} {{ tareas().length === 1 ? 'tarea encontrada' : 'tareas encontradas' }}
+                </td>
+            </tr>
+        </ng-template>
         <ng-template #emptymessage>
             <tr>
                 <td colspan="4">No se encontraron tareas.</td>
@@ -61,3 +75,4 @@
 </app-template>
 <app-gestion-tarea [(visible)]="dialogVisible" [idProyecto]="idProyecto()"
     [(tareaSeleccionada)]="tareaSeleccionada"></app-gestion-tarea>
+<p-confirmDialog />
