@@ -16,14 +16,18 @@ import { InputTextModule } from "primeng/inputtext";
 import { Router } from "@angular/router";
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
+import { EstadoFechaPipe } from "../../shared/pipes/estado-fecha.pipe";
+import { DiasRestantesPipe } from "../../shared/pipes/dias-restantes.pipe";
+import { ColorProgresoPipe } from "../../shared/pipes/color-progreso.pipe";
 
 
 @Component({
   selector: "app-proyectos-listado",
   templateUrl: "./proyectos-listado.html",
   styleUrls: ["./proyectos-listado.css"],
-  imports: [TableModule, ButtonModule, Template, TooltipModule, 
-    GestionProyecto, FormsModule, SelectModule, InputTextModule, MenuModule]
+  imports: [TableModule, ButtonModule, Template, TooltipModule,
+    GestionProyecto, FormsModule, SelectModule, InputTextModule, MenuModule,
+    EstadoFechaPipe, DiasRestantesPipe, ColorProgresoPipe]
 })
 export class ProyectosListado implements OnInit {
 
@@ -130,41 +134,6 @@ export class ProyectosListado implements OnInit {
     this.router.navigateByUrl(`/proyectos/${proyecto.id}/tareas`);
   }
 
-  colorProgreso(proyecto: ListProyectoDTO): string {
-    if (proyecto.totalTareas === 0) return '#16a34a';
-    const pct = (proyecto.tareasFinalizadas / proyecto.totalTareas) * 100;
-    if (pct <= 30) return '#dc2626';
-    if (pct <= 70) return '#d97706';
-    return '#16a34a';
-  }
-
-  diasRestantes(proyecto: ListProyectoDTO): { texto: string; clase: string } {
-    if (!proyecto.fechaFinalizacion) {
-      return { texto: '-', clase: '' };
-    }
-    if (proyecto.estado === EstadosProyectosEnum.FINALIZADO || proyecto.estado === EstadosProyectosEnum.BAJA) {
-      return { texto: '-', clase: '' };
-    }
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const fecha = new Date(proyecto.fechaFinalizacion + 'T00:00:00');
-    const dias = Math.round((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-    const pluralDia = (n: number) => n === 1 ? 'día' : 'días';
-    if (dias < 0) {
-      const d = Math.abs(dias);
-      return { texto: `Retrasado ${d} ${pluralDia(d)}`, clase: 'retrasado' };
-    }
-    if (dias === 0) {
-      return { texto: 'Vence hoy', clase: 'vence-hoy' };
-    }
-    const restante = dias === 1 ? 'restante' : 'restantes';
-    return { texto: `${dias} ${pluralDia(dias)} ${restante}`, clase: 'en-tiempo' };
-  }
-
-  estadoFecha(proyecto: ListProyectoDTO): string {
-    return proyecto.fechaFinalizacion ?? '-';
-  }
-
   copiarAlPortapapeles(proyecto: ListProyectoDTO): void {
     const texto = [
       `Proyecto`,
@@ -172,7 +141,7 @@ export class ProyectosListado implements OnInit {
       `Cliente: ${proyecto.cliente?.nombre || '-'}`,
       `Estado: ${proyecto.estado}`,
       `Fecha de finalización: ${proyecto.fechaFinalizacion || '-'}`,
-      `Estado del plazo: ${this.diasRestantes(proyecto).texto}`,
+      `Estado del plazo: ${new DiasRestantesPipe().transform(proyecto).texto}`,
       `Tareas: ${proyecto.tareas?.length ? proyecto.tareas.map(t => `${t.descripcion} (${t.estado})`).join(', ') : 'Sin tareas'}`
     ].join('\n');
 

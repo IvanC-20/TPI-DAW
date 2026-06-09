@@ -5,19 +5,19 @@
         <p-card header="Proyectos">
             <div class="metricas">
                 <div class="metrica">
-                    <span class="valor total">{{ estadisticas()!.proyectos.total }}</span>
+                    <span class="valor total">{{ aProyectosTotal() }}</span>
                     <span class="etiqueta">Total</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor activo">{{ estadisticas()!.proyectos.activos }}</span>
+                    <span class="valor activo">{{ aProyectosActivos() }}</span>
                     <span class="etiqueta">Activos</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor finalizado">{{ estadisticas()!.proyectos.finalizados }}</span>
+                    <span class="valor finalizado">{{ aProyectosFinalizados() }}</span>
                     <span class="etiqueta">Finalizados</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor baja">{{ estadisticas()!.proyectos.baja }}</span>
+                    <span class="valor baja">{{ aProyectosBaja() }}</span>
                     <span class="etiqueta">Baja</span>
                 </div>
             </div>
@@ -26,19 +26,19 @@
         <p-card header="Tareas">
             <div class="metricas">
                 <div class="metrica">
-                    <span class="valor total">{{ estadisticas()!.tareas.total }}</span>
+                    <span class="valor total">{{ aTareasTotal() }}</span>
                     <span class="etiqueta">Total</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor pendiente">{{ estadisticas()!.tareas.pendientes }}</span>
+                    <span class="valor pendiente">{{ aTareasPendientes() }}</span>
                     <span class="etiqueta">Pendientes</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor finalizado">{{ estadisticas()!.tareas.finalizadas }}</span>
+                    <span class="valor finalizado">{{ aTareasFinalizadas() }}</span>
                     <span class="etiqueta">Finalizadas</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor baja">{{ estadisticas()!.tareas.baja }}</span>
+                    <span class="valor baja">{{ aTareasBaja() }}</span>
                     <span class="etiqueta">Baja</span>
                 </div>
             </div>
@@ -47,15 +47,15 @@
         <p-card header="Clientes">
             <div class="metricas">
                 <div class="metrica">
-                    <span class="valor total">{{ estadisticas()!.clientes.total }}</span>
+                    <span class="valor total">{{ aClientesTotal() }}</span>
                     <span class="etiqueta">Total</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor activo">{{ estadisticas()!.clientes.activos }}</span>
+                    <span class="valor activo">{{ aClientesActivos() }}</span>
                     <span class="etiqueta">Activos</span>
                 </div>
                 <div class="metrica">
-                    <span class="valor baja">{{ estadisticas()!.clientes.baja }}</span>
+                    <span class="valor baja">{{ aClientesBaja() }}</span>
                     <span class="etiqueta">Baja</span>
                 </div>
             </div>

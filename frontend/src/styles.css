@@ -236,3 +236,11 @@ body {
 .p-toast .p-toast-message .p-toast-message-text .p-toast-detail {
     color: #374151 !important;
 }
+
+[data-theme="dark"] .p-toast .p-toast-message .p-toast-message-text .p-toast-summary {
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .p-toast .p-toast-message .p-toast-message-text .p-toast-detail {
+    color: #cbd5e1 !important;
+}

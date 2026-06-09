@@ -29,19 +29,19 @@
         <ng-template #body let-proyecto>
             <tr>
                 <td>
-                    @if (diasRestantes(proyecto).clase === 'retrasado') {
+                    @if ((proyecto | diasRestantes).clase === 'retrasado') {
                         <i class="pi pi-exclamation-triangle icono-retrasado" pTooltip="Proyecto retrasado" tooltipPosition="top"></i>
                     }
                     {{ proyecto.nombre }}
                 </td>
                 <td>{{ proyecto.cliente ? proyecto.cliente.nombre : '' }}</td>
                 <td><span [class]="'badge badge-' + proyecto.estado.toLowerCase()">{{ proyecto.estado }}</span></td>
-                <td>{{ estadoFecha(proyecto) }}</td>
-                <td [class]="diasRestantes(proyecto).clase">{{ diasRestantes(proyecto).texto }}</td>
+                <td>{{ proyecto.fechaFinalizacion | estadoFecha }}</td>
+                <td [class]="(proyecto | diasRestantes).clase">{{ (proyecto | diasRestantes).texto }}</td>
                 <td class="celda-progreso">
                     @if (proyecto.totalTareas > 0) {
                         <div class="barra-progreso" [pTooltip]="proyecto.tareasFinalizadas + ' de ' + proyecto.totalTareas + ' tareas finalizadas'" tooltipPosition="top">
-                            <div class="barra-relleno" [style.width.%]="(proyecto.tareasFinalizadas / proyecto.totalTareas) * 100" [style.background-color]="colorProgreso(proyecto)"></div>
+                            <div class="barra-relleno" [style.width.%]="(proyecto.tareasFinalizadas / proyecto.totalTareas) * 100" [style.background-color]="proyecto | colorProgreso"></div>
                         </div>
                         <span class="texto-progreso">{{ proyecto.tareasFinalizadas }}/{{ proyecto.totalTareas }}</span>
                     } @else {
