@@ -9,6 +9,7 @@
             <span id="bienvenida">Hola, {{ nombreUsuario }}</span>
             <span id="fecha-hoy">{{ fechaHoy }}</span>
         </div>
+        <p-button [icon]="modoOscuro() ? 'pi pi-sun' : 'pi pi-moon'" [pTooltip]="modoOscuro() ? 'Modo claro' : 'Modo oscuro'" severity="secondary" (click)="toggleModo()"></p-button>
         <p-button id="boton-cerrar-sesion" icon="pi pi-sign-out" label="Cerrar Sesión" severity="danger" (click)="cerrarSesion()"></p-button>
     </div>
 </header>
