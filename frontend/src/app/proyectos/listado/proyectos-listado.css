@@ -92,3 +92,17 @@
     vertical-align: middle;
 }
 
+@media (max-width: 1024px) {
+    #acciones-superiores {
+        flex-wrap: wrap;
+    }
+
+    #filtros {
+        flex-wrap: wrap;
+    }
+
+    .celda-progreso {
+        min-width: 6rem;
+    }
+}
+

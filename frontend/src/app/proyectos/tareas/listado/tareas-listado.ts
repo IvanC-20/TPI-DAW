@@ -129,7 +129,7 @@ export class TareasListado implements OnInit {
 
   eliminarTarea(tarea: ListTareaDTO): void {
     this.confirmationService.confirm({
-      message: `¿Estás segura de que querés eliminar la tarea "${tarea.descripcion}"?`,
+      message: `¿Estás seguro de que querés eliminar la tarea "${tarea.descripcion}"?`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí, eliminar',

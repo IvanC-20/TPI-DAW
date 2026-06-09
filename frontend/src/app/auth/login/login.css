@@ -57,3 +57,17 @@ form {
     color: var(--p-red-500);
     font-size: 0.8rem;
 }
+
+:host-context([data-theme="dark"]) :host {
+    background-color: #0f172a;
+}
+
+:host-context([data-theme="dark"]) #main {
+    background-color: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+:host-context([data-theme="dark"]) #header {
+    color: #e2e8f0;
+}

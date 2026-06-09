@@ -105,8 +105,66 @@
 }
 
 [data-theme="dark"] .badge-pendiente {
-    background-color: #451a03;
-    color: #fbbf24;
+    background-color: #422006;
+    color: #fb923c;
+}
+
+/* Barra de progreso */
+[data-theme="dark"] .barra-progreso {
+    background-color: #334155 !important;
+}
+
+/* Badge mini pendientes */
+[data-theme="dark"] .badge-pendientes-mini {
+    background-color: #422006 !important;
+    color: #fb923c !important;
+}
+
+/* Login */
+[data-theme="dark"] .login-host {
+    background-color: #0f172a !important;
+}
+
+/* Estadísticas — valores de métricas */
+[data-theme="dark"] .valor {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .etiqueta {
+    color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .activo {
+    color: #4ade80 !important;
+}
+
+[data-theme="dark"] .finalizado {
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .pendiente {
+    color: #fb923c !important;
+}
+
+[data-theme="dark"] .baja {
+    color: #f87171 !important;
+}
+
+/* Vista de tareas — datos básicos del proyecto */
+[data-theme="dark"] .resumen {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] #datos-basicos {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] #footer-tabla {
+    color: #94a3b8 !important;
 }
 
 * {

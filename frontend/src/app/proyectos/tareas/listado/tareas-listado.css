@@ -48,6 +48,16 @@
     margin-bottom: 1rem;
 }
 
+@media (max-width: 1024px) {
+    #datos-basicos {
+        gap: 0.5rem;
+    }
+
+    #acciones-tareas {
+        flex-wrap: wrap;
+    }
+}
+
 #footer-tabla {
     font-size: 0.85rem;
     color: #6b7280;
