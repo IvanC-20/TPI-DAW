@@ -16,4 +16,17 @@ export interface EstadisticasDTO {
         activos: number;
         baja: number;
     };
+    plazo: {
+        retrasados: number;
+        venceHoy: number;
+        enTiempo: number;
+        sinFecha: number;
+    };
+    progresoProyectos: {
+        nombre: string;
+        progreso: number;
+        pendientes: number;
+        finalizadas: number;
+        total: number;
+    }[];
 }

@@ -65,10 +65,28 @@
 
     <div id="grilla-graficos">
         <p-card header="Proyectos por estado">
-            <p-chart type="doughnut" [data]="datosProyectos()" [options]="opcionesGrafico" [style]="{ height: '300px' }"></p-chart>
+            <p-chart type="doughnut" [data]="datosProyectos()" [options]="opcionesDonut" [style]="{ height: '280px' }"></p-chart>
         </p-card>
         <p-card header="Tareas por estado">
-            <p-chart type="doughnut" [data]="datosTareas()" [options]="opcionesGrafico" [style]="{ height: '300px' }"></p-chart>
+            <p-chart type="doughnut" [data]="datosTareas()" [options]="opcionesDonut" [style]="{ height: '280px' }"></p-chart>
+        </p-card>
+        <p-card header="Clientes por estado">
+            <p-chart type="doughnut" [data]="datosClientes()" [options]="opcionesDonut" [style]="{ height: '280px' }"></p-chart>
+        </p-card>
+        <p-card header="Estado del plazo (proyectos activos)">
+            <div class="contenedor-grafico">
+                <p-chart type="bar" [data]="datosPlazo()" [options]="opcionesBarras"></p-chart>
+            </div>
+        </p-card>
+        <p-card header="Progreso por proyecto">
+            <div class="contenedor-grafico">
+                <p-chart type="bar" [data]="datosProgreso()" [options]="opcionesBarrasHorizontales"></p-chart>
+            </div>
+        </p-card>
+        <p-card header="Tareas por proyecto">
+            <div class="contenedor-grafico">
+                <p-chart type="bar" [data]="datosTareasPorProyecto()" [options]="opcionesBarrasApiladas"></p-chart>
+            </div>
         </p-card>
     </div>
     }

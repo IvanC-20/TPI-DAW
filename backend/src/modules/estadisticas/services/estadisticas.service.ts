@@ -22,17 +22,53 @@ export class EstadisticasService {
         const totalProyectos = await this.proyectosRepository.count();
         const proyectosActivos = await this.proyectosRepository.count({ where: { estado: EstadosProyectosEnum.ACTIVO } });
         const proyectosFinalizados = await this.proyectosRepository.count({ where: { estado: EstadosProyectosEnum.FINALIZADO } });
+        const proyectosBaja = await this.proyectosRepository.count({ where: { estado: EstadosProyectosEnum.BAJA } });
 
         const totalTareas = await this.tareasRepository.count();
         const tareasPendientes = await this.tareasRepository.count({ where: { estado: EstadosTareasEnum.PENDIENTE } });
         const tareasFinalizadas = await this.tareasRepository.count({ where: { estado: EstadosTareasEnum.FINALIZADA } });
-
-        const proyectosBaja = await this.proyectosRepository.count({ where: { estado: EstadosProyectosEnum.BAJA } });
         const tareasBaja = await this.tareasRepository.count({ where: { estado: EstadosTareasEnum.BAJA } });
 
         const totalClientes = await this.clientesRepository.count();
         const clientesActivos = await this.clientesRepository.count({ where: { estado: EstadosClientesEnum.ACTIVO } });
         const clientesBaja = await this.clientesRepository.count({ where: { estado: EstadosClientesEnum.BAJA } });
+
+        const proyectosConTareas = await this.proyectosRepository.find({
+            where: { estado: EstadosProyectosEnum.ACTIVO },
+            relations: ['tareas'],
+            order: { nombre: 'ASC' }
+        });
+
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        let plazoRetrasados = 0;
+        let plazoVenceHoy = 0;
+        let plazoEnTiempo = 0;
+        let plazoSinFecha = 0;
+
+        const progresoProyectos = proyectosConTareas.map(p => {
+            if (p.fechaFinalizacion) {
+                const fecha = new Date(p.fechaFinalizacion + 'T00:00:00');
+                const dias = Math.round((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+                if (dias < 0) plazoRetrasados++;
+                else if (dias === 0) plazoVenceHoy++;
+                else plazoEnTiempo++;
+            } else {
+                plazoSinFecha++;
+            }
+
+            const total = p.tareas?.length ?? 0;
+            const finalizadas = p.tareas?.filter(t => t.estado === EstadosTareasEnum.FINALIZADA).length ?? 0;
+            const pendientes = p.tareas?.filter(t => t.estado === EstadosTareasEnum.PENDIENTE).length ?? 0;
+            return {
+                nombre: p.nombre,
+                progreso: total > 0 ? Math.round((finalizadas / total) * 100) : 0,
+                pendientes,
+                finalizadas,
+                total
+            };
+        });
 
         return {
             proyectos: {
@@ -51,7 +87,14 @@ export class EstadisticasService {
                 total: totalClientes,
                 activos: clientesActivos,
                 baja: clientesBaja
-            }
+            },
+            plazo: {
+                retrasados: plazoRetrasados,
+                venceHoy: plazoVenceHoy,
+                enTiempo: plazoEnTiempo,
+                sinFecha: plazoSinFecha
+            },
+            progresoProyectos
         };
     }
 

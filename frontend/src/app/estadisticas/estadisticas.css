@@ -7,7 +7,7 @@
 
 #grilla-graficos {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-top: 1.5rem;
 }
@@ -19,6 +19,18 @@
 
 #grilla-graficos ::ng-deep canvas {
     margin: 0 auto;
+}
+
+.contenedor-grafico {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contenedor-grafico ::ng-deep canvas {
+    max-height: 260px;
 }
 
 .metricas {
