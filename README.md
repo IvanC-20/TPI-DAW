@@ -28,24 +28,31 @@ Sistema web para la gestión de proyectos, clientes y tareas. Permite crear y ad
 
 ## Configuración de la base de datos
 
-1. Crear una base de datos llamada `gestor_de_proyectos`
-2. Ejecutar el script `sql/init.sql` para crear las tablas y el usuario inicial
+1. Crear el usuario de base de datos:
+```sql
+CREATE USER daw WITH PASSWORD '2026';
+```
+2. Crear la base de datos:
+```sql
+CREATE DATABASE gestor_de_proyectos OWNER daw;
+```
+3. Ejecutar el script `sql/init.sql` para crear las tablas y el usuario inicial:
+```bash
+psql -U daw -d gestor_de_proyectos -f sql/init.sql
+```
 
 ## Cómo correr el proyecto
 
-### Backend
+### Modo desarrollo
 
+**Backend:**
 ```bash
 cd backend
 npm install
 npm run start:dev
 ```
 
-El backend queda disponible en `http://localhost:3000`.  
-La documentación Swagger está en `http://localhost:3000/api`.
-
-### Frontend
-
+**Frontend:**
 ```bash
 cd frontend
 npm install
@@ -53,6 +60,34 @@ npm start
 ```
 
 El frontend queda disponible en `http://localhost:4200`.
+
+### Modo producción (PM2 + nginx)
+
+**Backend:**
+```bash
+cd backend
+npm install
+npm run build
+pm2 start ecosystem.config.js
+```
+
+El backend queda disponible en `http://localhost:4000`.
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+ng build
+```
+
+Copiar el contenido de `frontend/dist/frontend/browser/` al directorio `html` de nginx.
+
+Configurar nginx usando el archivo `docs/nginx.conf` e iniciarlo:
+```bash
+nginx -c /ruta/a/docs/nginx.conf
+```
+
+El sistema queda disponible en `https://localhost`.
 
 ## Usuario de prueba
 
