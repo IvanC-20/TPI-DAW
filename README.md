@@ -60,6 +60,8 @@ El backend queda disponible en `http://localhost:4000`.
 cd frontend
 npm install
 ng build
+# o si ng no está instalado globalmente:
+npx ng build
 ```
 
 Copiar el contenido de `frontend/dist/frontend/browser/` al directorio `html` de nginx.
