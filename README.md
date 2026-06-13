@@ -61,7 +61,7 @@ npm start
 
 El frontend queda disponible en `http://localhost:4200`.
 
-### Modo producción (PM2 + nginx)
+### Con PM2 y nginx
 
 **Backend:**
 ```bash
