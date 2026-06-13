@@ -43,24 +43,6 @@ psql -U daw -d gestor_de_proyectos -f sql/init.sql
 
 ## Cómo correr el proyecto
 
-### Modo desarrollo
-
-**Backend:**
-```bash
-cd backend
-npm install
-npm run start:dev
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm start
-```
-
-El frontend queda disponible en `http://localhost:4200`.
-
 ### Con PM2 y nginx
 
 **Backend:**
