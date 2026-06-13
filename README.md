@@ -64,10 +64,7 @@ ng build
 
 Copiar el contenido de `frontend/dist/frontend/browser/` al directorio `html` de nginx.
 
-Configurar nginx usando el archivo `docs/nginx.conf` e iniciarlo:
-```bash
-nginx -c /ruta/a/docs/nginx.conf
-```
+Copiar `docs/nginx.conf` al directorio de configuración de nginx e iniciarlo.
 
 El sistema queda disponible en `https://localhost`.
 
