@@ -70,7 +70,9 @@ export class GestionCliente {
         this.clienteSeleccionado.set(null);
         this.form.reset({
             nombre: "",
-            estado: null
+            estado: null,
+            telefono: "",
+            correo: ""
         });
         this.visible.set(false);
     }
