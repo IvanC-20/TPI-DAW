@@ -7,13 +7,15 @@ CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nombre TEXT NOT NULL UNIQUE,
     clave TEXT NOT NULL,
-    estado estados_usuarios NOT NULL
+    estado estados_usuarios NOT NULL		
 );
 
 CREATE TABLE clientes (
     id SERIAL PRIMARY KEY,
     nombre TEXT NOT NULL UNIQUE,
-    estado estados_clientes NOT NULL
+    estado estados_clientes NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    correo TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE proyectos (

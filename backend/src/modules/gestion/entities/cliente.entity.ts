@@ -11,6 +11,12 @@ export class Cliente {
     @Column()
     nombre!: string;
 
+    @Column()
+    telefono!: string;
+
+    @Column()
+    correo!: string;
+
     @Column({ type: 'enum', enum: EstadosClientesEnum })
     estado!: EstadosClientesEnum
 

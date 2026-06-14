@@ -89,3 +89,4 @@ El sistema queda disponible en `https://localhost`.
 - **Copiar datos:** copia la información de cualquier fila al portapapeles
 - **Modo oscuro:** toggle en el header con persistencia entre sesiones
 - **Diseño responsive:** adaptado a distintas resoluciones de pantalla
+- **Registro clientes:** añade campos de contacto por cada cliente 
