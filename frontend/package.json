@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "compodoc": "npx compodoc -p tsconfig.doc.json -d documentation -s -w",
+    "deploy":"npm run build && npm run nginx:limpiar && npm run nginx:llenar",
+    "nginx:limpiar": "del /F /Q C:\\nginx-1.30.2\\html\\* && for /d %x in (C:\\nginx-1.30.2\\html\\*) do rmdir /S /Q \"%x\"",
+    "nginx:llenar":"xcopy /E /I dist\\frontend\\browser\\* C:\\nginx-1.30.2\\html\\",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

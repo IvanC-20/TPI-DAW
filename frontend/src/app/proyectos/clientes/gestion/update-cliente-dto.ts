@@ -1,7 +1,7 @@
 import { EstadosClientesEnum } from "../estados-clientes-enum";
 import { CreateClienteDTO } from "./create-cliente-dto";
 
-export interface UpdateClienteDto extends Pick<CreateClienteDTO, "nombre"> {
+export interface UpdateClienteDto extends Pick<CreateClienteDTO, "nombre" | "telefono" | "correo"> {
 
     estado: EstadosClientesEnum;
 

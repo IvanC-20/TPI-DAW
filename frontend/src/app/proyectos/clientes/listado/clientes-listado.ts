@@ -87,7 +87,7 @@ export class ClientesListado implements OnInit {
   }
 
   copiarAlPortapapeles(cliente: ListClienteDTO): void {
-    const texto = `Cliente\nNombre: ${cliente.nombre}\nEstado: ${cliente.estado}`;
+    const texto = `Cliente\nNombre: ${cliente.nombre}\nEstado: ${cliente.estado}\nTelefono: ${cliente.telefono}\nEmail: ${cliente.correo}`;
     navigator.clipboard.writeText(texto).then(() => {
       this.messageService.add({ severity: 'success', summary: 'Copiado', detail: 'Datos copiados al portapapeles' });
     });

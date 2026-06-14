@@ -13,12 +13,16 @@
             <tr>
                 <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"/></th>
                 <th pSortableColumn="estado">Estado <p-sortIcon field="estado"/></th>
+                <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"/></th>
+                <th pSortableColumn="correo">Correo <p-sortIcon field="correo"/></th>
                 <th>Acciones</th>
             </tr>
         </ng-template>
         <ng-template #body let-cliente>
             <tr>
                 <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.telefono }}</td>
+                <td>{{ cliente.correo }}</td>
                 <td><span [class]="'badge badge-' + cliente.estado.toLowerCase()">{{ cliente.estado }}</span></td>
                 <td class="acciones">
                     <p-button icon="pi pi-pencil" pTooltip="Editar Cliente" severity="warn" (click)="editarCliente(cliente)"></p-button>

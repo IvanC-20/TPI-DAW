@@ -40,7 +40,9 @@ export class GestionCliente {
 
     readonly form: FormGroup = new FormGroup({
         nombre: new FormControl("", [Validators.required]),
-        estado: new FormControl(null)
+        estado: new FormControl(null),
+        telefono: new FormControl("", [Validators.required]),
+        correo: new FormControl("", [Validators.required, Validators.email])
     });
 
     constructor() {
@@ -48,13 +50,17 @@ export class GestionCliente {
             if (this.clienteSeleccionado()) {
                 this.form.patchValue({
                     nombre: this.clienteSeleccionado()?.nombre,
-                    estado: this.clienteSeleccionado()?.estado
+                    estado: this.clienteSeleccionado()?.estado,
+                    telefono: this.clienteSeleccionado()?.telefono,
+                    correo: this.clienteSeleccionado()?.correo
                 });
             }
             else {
                 this.form.reset({
                     nombre: "",
-                    estado: null
+                    estado: null,
+                    telefono: "",
+                    correo: ""
                 });
             }
         });
@@ -81,6 +87,8 @@ export class GestionCliente {
         if (this.clienteSeleccionado()) {
             const dto: UpdateClienteDto = {
                 nombre: formRawValue.nombre,
+                telefono: formRawValue.telefono,
+                correo: formRawValue.correo,
                 estado: formRawValue.estado
             };
             this.gestionClienteApiClient.actualizarCliente(this.clienteSeleccionado()?.id!, dto).subscribe({
@@ -101,7 +109,9 @@ export class GestionCliente {
             });
         } else {
             const dto: CreateClienteDTO = {
-                nombre: formRawValue.nombre
+                nombre: formRawValue.nombre,
+                telefono: formRawValue.telefono,
+                correo: formRawValue.correo
             };
             this.gestionClienteApiClient.crearCliente(dto).subscribe({
                 next: () => {
