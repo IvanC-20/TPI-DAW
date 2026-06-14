@@ -3,18 +3,21 @@
         <p-button icon="pi pi-plus" label="Crear Proyecto" severity="success" (click)="crearProyecto()"></p-button>
         <p-button icon="pi pi-file-export" label="Exportar" severity="secondary" (click)="menuExportar.toggle($event)"></p-button>
         <p-menu #menuExportar [model]="opcionesExportar" [popup]="true" appendTo="body" />
-        <!-- <p-button icon="pi pi-file-export" label="Exportar CSV" severity="secondary" (click)="exportar('csv','proyectos.csv')"></p-button>
-        <p-button icon="pi pi-file-export" label="Exportar JSON" severity="secondary" (click)="exportar('json','proyectos.json')"></p-button>
-        <p-button icon="pi pi-file-export" label="Exportar Excel" severity="secondary" (click)="exportar('excel','proyectos.xlsx')"></p-button>
-        <p-button icon="pi pi-file-export" label="Exportar PDF" severity="secondary" (click)="exportar('pdf','proyectos.pdf')"></p-button> -->
         
     </div>
     <div id="filtros">
-        <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroPorNombre()" (ngModelChange)="filtroPorNombre.set($event); buscar()" />
+        <!-- <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroPorNombre()" (ngModelChange)="filtroPorNombre.set($event); buscar()" /> -->
+        <app-fuzzy-search
+                #fuzzySearch
+                [items]="proyectos()"
+                searchKey="nombre"
+                placeholder="Buscar por nombre..."
+                (resultados)="onResultados($event)" 
+            />
         <p-select [options]="opciones" optionLabel="label" optionValue="value" [ngModel]="filtroPorEstado()" (ngModelChange)="filtroPorEstado.set($event); buscar()" placeholder="Filtrar por estado" appendTo="body"></p-select>
         <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
     </div>
-    <p-table id="tabla" [value]="proyectos()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh" [sortMode]="'single'">
+    <p-table id="tabla" [value]="proyectosFiltrados()" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="60vh" [sortMode]="'single'">
         <ng-template #header>
             <tr>
                 <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"/></th>
@@ -59,7 +62,7 @@
         <ng-template #footer>
             <tr>
                 <td colspan="7" id="footer-tabla">
-                    {{ proyectos().length }} {{ proyectos().length === 1 ? 'proyecto encontrado' : 'proyectos encontrados' }}
+                    {{ proyectosFiltrados().length }} {{ proyectosFiltrados().length === 1 ? 'proyecto encontrado' : 'proyectos encontrados' }}
                 </td>
             </tr>
         </ng-template>

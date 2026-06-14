@@ -19,6 +19,8 @@ import { MenuModule } from 'primeng/menu';
 import { EstadoFechaPipe } from "../../shared/pipes/estado-fecha.pipe";
 import { DiasRestantesPipe } from "../../shared/pipes/dias-restantes.pipe";
 import { ColorProgresoPipe } from "../../shared/pipes/color-progreso.pipe";
+import { FuzzySearch } from "../../shared/fuzzy-search/fuzzy-search"
+import { ViewChild } from "@angular/core";
 
 
 @Component({
@@ -27,7 +29,7 @@ import { ColorProgresoPipe } from "../../shared/pipes/color-progreso.pipe";
   styleUrls: ["./proyectos-listado.css"],
   imports: [TableModule, ButtonModule, Template, TooltipModule,
     GestionProyecto, FormsModule, SelectModule, InputTextModule, MenuModule,
-    EstadoFechaPipe, DiasRestantesPipe, ColorProgresoPipe]
+    EstadoFechaPipe, DiasRestantesPipe, ColorProgresoPipe, FuzzySearch]
 })
 export class ProyectosListado implements OnInit {
 
@@ -40,9 +42,12 @@ export class ProyectosListado implements OnInit {
   proyectos: WritableSignal<ListProyectoDTO[]> = signal([]);
   dialogVisible: WritableSignal<boolean> = signal(false);
   proyectoSeleccionado: WritableSignal<ListProyectoDTO | null> = signal<ListProyectoDTO | null>(null);
+  proyectosFiltrados: WritableSignal<ListProyectoDTO[]> = signal([]);
 
   filtroPorNombre: WritableSignal<string> = signal('');
   filtroPorEstado: WritableSignal<string | null> = signal(null);
+  
+  @ViewChild('fuzzySearch') fuzzySearch!: FuzzySearch<ListProyectoDTO>;
 
   readonly opciones: { label: string; value: string | null }[] = [
     { label: 'Todos', value: null },
@@ -68,6 +73,7 @@ export class ProyectosListado implements OnInit {
     ).subscribe({
       next: (data) => {
         this.proyectos.set(data);
+        this.proyectosFiltrados.set(data)
       },
       error: () => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener los proyectos' });
@@ -83,6 +89,7 @@ export class ProyectosListado implements OnInit {
     this.filtroPorNombre.set('');
     this.filtroPorEstado.set(null);
     this.refrescarProyectos();
+    this.fuzzySearch.limpiar()
   }
 
   crearProyecto(): void {
@@ -148,6 +155,10 @@ export class ProyectosListado implements OnInit {
     navigator.clipboard.writeText(texto).then(() => {
       this.messageService.add({ severity: 'success', summary: 'Copiado', detail: 'Datos copiados al portapapeles' });
     });
+  }
+
+  onResultados(resultados: ListProyectoDTO[]): void {
+    this.proyectosFiltrados.set(resultados);
   }
 
   // Exportando datos

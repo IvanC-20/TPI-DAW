@@ -14,12 +14,14 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ProyectoApiClient } from "./proyecto-api-client";
 import { ProyectoDTO } from "./proyecto-dto";
 import { GestionTareaApiClient } from "../gestion/gestion-tarea-api-client";
+import { ViewChild } from "@angular/core";
+import { FuzzySearch } from "../../../shared/fuzzy-search/fuzzy-search";
 
 @Component({
   selector: "app-tareas-listado",
   templateUrl: "./tareas-listado.html",
   styleUrls: ["./tareas-listado.css"],
-  imports: [TableModule, ButtonModule, Template, TooltipModule, GestionTarea, ConfirmDialogModule, SelectModule, FormsModule, InputTextModule],
+  imports: [TableModule, ButtonModule, Template, TooltipModule, GestionTarea, ConfirmDialogModule, SelectModule, FormsModule, InputTextModule, FuzzySearch],
   providers: [ConfirmationService]
 })
 export class TareasListado implements OnInit {
@@ -41,17 +43,17 @@ export class TareasListado implements OnInit {
     { label: 'Baja', value: 'BAJA' }
   ];
 
+  tareasFiltradas: WritableSignal<ListTareaDTO[]> = signal([]);
+  @ViewChild('fuzzySearch') fuzzySearch!: FuzzySearch<ListTareaDTO>;
+
   tareas: Signal<ListTareaDTO[]> = computed(() => {
-    let todas = this.proyecto()?.tareas || [];
-    const nombre = this.filtroNombre().toLowerCase().trim();
     const estado = this.filtroEstado();
-    if (nombre) todas = todas.filter(t => t.descripcion.toLowerCase().includes(nombre));
-    if (estado) todas = todas.filter(t => t.estado === estado);
-    return todas;
+    if (!estado) return this.tareasFiltradas();
+    return this.tareasFiltradas().filter(t => t.estado === estado);
   });
 
   limpiarFiltros(): void {
-    this.filtroNombre.set('');
+    this.fuzzySearch.limpiar();
     this.filtroEstado.set(null);
   }
 
@@ -100,6 +102,7 @@ export class TareasListado implements OnInit {
     this.proyectoApiClient.buscarProyecto(this.idProyecto()).subscribe({
       next: (data) => {
         this.proyecto.set(data);
+        this.tareasFiltradas.set(data?.tareas || [])
       },
       error: (error) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el proyecto' });
@@ -152,5 +155,7 @@ export class TareasListado implements OnInit {
       }
     });
   }
-
+  onResultados(resultados: ListTareaDTO[]): void {
+  this.tareasFiltradas.set(resultados);
+}
 }

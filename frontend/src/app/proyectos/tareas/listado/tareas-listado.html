@@ -35,7 +35,13 @@
         <p-button icon="pi pi-plus" label="Crear Tarea" severity="success" (click)="crearTarea()"></p-button>
     </div>
     <div id="filtros-tareas">
-        <input pInputText type="text" placeholder="Buscar por nombre..." [ngModel]="filtroNombre()" (ngModelChange)="filtroNombre.set($event)" />
+        <app-fuzzy-search
+            #fuzzySearch
+            [items]="proyecto()?.tareas || []"
+            searchKey="descripcion"
+            placeholder="Buscar por nombre..."
+            (resultados)="onResultados($event)"
+        />
         <p-select [options]="opcionesFiltro" optionLabel="label" optionValue="value" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)" placeholder="Filtrar por estado" appendTo="body"></p-select>
         <p-button icon="pi pi-times" label="Limpiar" severity="danger" (click)="limpiarFiltros()"></p-button>
     </div>

@@ -1,0 +1,5 @@
+<input pInputText type="text" 
+    [placeholder]="placeholder()"
+    [ngModel]="termino()"
+    (ngModelChange)="onInput($event)"
+    (keyup.escape)="limpiar()" />
